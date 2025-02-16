@@ -14,8 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
 
 export default function FoodInventory() {
-  const { state, addItemToInventory } = useAppContext();
-  const { inventory } = state;
+  const { inventory, addItemToInventory } = useAppContext();
 
   const [newItemName, setNewItemName] = useState<string>("");
   const [newItemCategory, setNewItemCategory] =
@@ -47,7 +46,6 @@ export default function FoodInventory() {
     <div className="mx-auto max-w-6xl py-12 px-4 md:px-6 lg:px-8">
       <h1 className="text-3xl font-bold text-[#3c692c] mb-6">Food Inventory</h1>
 
-      {/* Add New Item */}
       <Card className="p-6 shadow-md mb-6">
         <CardTitle className="text-xl font-semibold mb-4">
           Add New Item
@@ -96,7 +94,6 @@ export default function FoodInventory() {
         </CardContent>
       </Card>
 
-      {/* Display Inventory */}
       <Card className="p-6 shadow-md">
         <CardTitle className="text-xl font-semibold mb-4">
           Inventory Items
