@@ -30,3 +30,9 @@ export type InventoryItem = {
   category: "Vegetable" | "Protein" | "Dairy" | "Grain" | "Other";
   image: string;
 };
+
+export type AppState = {
+  inventory: InventoryItem[];
+  planner: DayPlan[];
+  customRecipes: Recipe[];
+};
