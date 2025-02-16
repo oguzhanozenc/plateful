@@ -2,7 +2,7 @@
 
 ## Overview
 
-<a href="https://platefulapp.netlify.app/" target="_blank">
+<a href="https://platefulapp.vercel.app/" target="_blank">
   <img src="/public/featuredimg.png" alt="Featured Image"  />
 </a>
 
@@ -17,11 +17,12 @@ Plateful is a **meal planning web application** designed to help users efficient
 
 ## Tech Stack
 
-- **Frontend:** React (with TypeScript), ShadCN/UI
-- **Routing:** React Router
+- **Framework:** Next.js (with TypeScript)
+- **Routing:** Next.js App Router
 - **State Management:** React Context API
 - **Styling:** Tailwind CSS
-- **Deployment:** Netlify
+- **UI Components:** ShadCN/UI
+- **Deployment:** Vercel
 
 ## Project Structure
 
@@ -29,18 +30,19 @@ Plateful is a **meal planning web application** designed to help users efficient
 plateful/
 ├── src/
 │   ├── components/      # UI components
-│   ├── pages/           # Page components
+│   ├── app/             # Next.js App Router pages
 │   ├── hooks/           # Custom React hooks
 │   ├── assets/          # Static assets
 │   ├── utils/           # Helper functions
 │   ├── styles/          # Tailwind CSS styles
-│   ├── App.tsx          # Main App component
-│   ├── main.tsx         # Entry point
 │   ├── context/         # Context API state management
-│   └── config.ts        # Configuration settings
+│   ├── config.ts        # Configuration settings
+│   ├── middleware.ts    # Middleware logic (if any)
+│   └── lib/             # Server-side utilities (if needed)
 ├── public/              # Static files
 ├── package.json         # Project dependencies
 ├── README.md            # Documentation
+├── next.config.js       # Next.js configuration
 └── .gitignore           # Git ignored files
 ```
 
@@ -65,9 +67,9 @@ yarn install
 yarn dev
 ```
 
-Runs the app in development mode. Open `http://localhost:5173/` in your browser.
+Runs the app in development mode. Open `http://localhost:3000/` in your browser.
 
-## Deployment to Netlify
+## Deployment to Vercel
 
 ### 1. Build for Production
 
@@ -75,12 +77,11 @@ Runs the app in development mode. Open `http://localhost:5173/` in your browser.
 yarn build
 ```
 
-### 2. Deploy to Netlify
+### 2. Deploy to Vercel
 
-- Link your GitHub repository to Netlify
+- Link your GitHub repository to Vercel
 - Set **build command** to `yarn build`
-- Set **publish directory** to `dist/`
-- Deploy your site at `https://platefulapp.netlify.app/`
+- Deploy your site at `https://platefulapp.vercel.app/`
 
 ## Contributing
 
