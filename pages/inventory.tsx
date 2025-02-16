@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useAppContext } from "../store/AppContext";
-import { CATEGORY_OPTIONS, CategoryOptions } from "../types/types";
+import { CATEGORY_OPTIONS, CategoryOptions } from "@/types/types";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -32,7 +32,6 @@ export default function FoodInventory() {
 
   return (
     <div className="mx-auto max-w-3xl py-12 px-6">
-      {/* HEADER */}
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-4xl font-bold tracking-tight text-gray-900">
           Inventory
@@ -50,7 +49,6 @@ export default function FoodInventory() {
         </Button>
       </div>
 
-      {/* ADD/EDIT ITEM CARD */}
       {showAddItem && (
         <Card className="p-5 border border-gray-200 rounded-lg bg-white shadow-sm transition-all mb-6">
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -87,7 +85,6 @@ export default function FoodInventory() {
         </Card>
       )}
 
-      {/* INVENTORY LIST */}
       <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-5">
         <h2 className="text-lg font-semibold text-gray-900 mb-3">
           Inventory Items
@@ -112,7 +109,6 @@ export default function FoodInventory() {
                     {item.name}
                   </span>
 
-                  {/* CATEGORY BADGE */}
                   <span
                     className={cn(
                       "px-3 py-1 text-xs font-medium rounded-full",
@@ -131,7 +127,6 @@ export default function FoodInventory() {
                   </span>
                 </div>
 
-                {/* ACTION BUTTONS */}
                 <div className="flex gap-2">
                   <Button
                     size="icon"

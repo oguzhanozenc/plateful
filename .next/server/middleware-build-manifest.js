@@ -25,11 +25,6 @@ self.__BUILD_MANIFEST = {
       "static/chunks/main.js",
       "static/chunks/pages/_error.js"
     ],
-    "/generate-recipe": [
-      "static/chunks/webpack.js",
-      "static/chunks/main.js",
-      "static/chunks/pages/generate-recipe.js"
-    ],
     "/inventory": [
       "static/chunks/webpack.js",
       "static/chunks/main.js",
