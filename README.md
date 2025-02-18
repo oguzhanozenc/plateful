@@ -28,22 +28,57 @@ Plateful is a **meal planning web application** designed to help users efficient
 
 ```
 plateful/
-├── src/
-│   ├── components/      # UI components
-│   ├── app/             # Next.js App Router pages
-│   ├── hooks/           # Custom React hooks
-│   ├── assets/          # Static assets
-│   ├── utils/           # Helper functions
-│   ├── styles/          # Tailwind CSS styles
-│   ├── context/         # Context API state management
-│   ├── config.ts        # Configuration settings
-│   ├── middleware.ts    # Middleware logic (if any)
-│   └── lib/             # Server-side utilities (if needed)
-├── public/              # Static files
-├── package.json         # Project dependencies
-├── README.md            # Documentation
-├── next.config.js       # Next.js configuration
-└── .gitignore           # Git ignored files
+│── app/                     # Next.js App Router directory
+│   ├── layout.tsx           # Root layout for shared structure
+│   ├── not-found.tsx        # 404 page handling
+│   ├── page.tsx             # Home page
+│   │
+│   ├── api/                 # API routes (server functions)
+│   │   ├── recipes/route.ts # Recipes API endpoint
+│   │   ├── (other API routes)
+│   │
+│   ├── create-recipe/page.tsx     # Create a new recipe
+│   ├── generate-recipe/page.tsx   # Generate a recipe
+│   ├── inventory/page.tsx         # Inventory management
+│   ├── recipes/page.tsx           # Recipes listing
+│   ├── shopping-list/page.tsx     # Shopping list management
+│   ├── weekly-planner/page.tsx    # Weekly meal planner
+│
+│── components/              # Shared reusable UI components
+│
+│── context/                 # Context API state management
+│   ├── AppContext.tsx       # Global state provider
+│
+│── hooks/                   # Custom React hooks
+│   ├── useInventory.ts      # Inventory-related logic
+│   ├── useRecipes.ts        # Fetching and handling recipes
+│
+│── lib/                     # Utility functions & API helpers
+│   ├── api.ts               # Global fetch helper
+│   ├── utils.ts             # General utility functions
+│
+│── public/                  # Static assets
+│   ├── featuredimg.png      # Featured image
+│   ├── logo.png             # App logo
+│
+│── styles/                  # Global styling files
+│   ├── global.css           # Tailwind styles
+│
+│── types/                   # TypeScript type definitions
+│
+│── ui/                      # ShadCN/UI components
+│   ├── button.tsx           # Button component
+│   ├── input.tsx            # Input component
+│   ├── select.tsx           # Select dropdown
+│   ├── dialog.tsx           # Modal/dialog component
+│
+│── .gitignore               # Git ignored files
+│── eslint.config.js         # Linting configuration
+│── next-env.d.ts            # Next.js TypeScript setup
+│── package.json             # Project dependencies
+│── tailwind.config.js       # Tailwind configuration
+│── tsconfig.json            # TypeScript configuration
+│── README.md                # Project documentation
 ```
 
 ## Getting Started
