@@ -1,12 +1,9 @@
 export type Recipe = {
   id: number;
   title: string;
-  ingredients: string[];
-  category?: CategoryOptions;
   image: string;
-  calories?: number;
-  description?: string;
-  tags?: string[];
+  usedIngredients?: { id: number; name: string }[];
+  missedIngredientCount?: number;
 };
 
 export type DayPlan = {
