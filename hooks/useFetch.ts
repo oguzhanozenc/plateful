@@ -24,20 +24,16 @@ export function useFetch<T>() {
         );
       }
 
-      console.log("📡 Fetching from API:", url.toString());
-
       const res = await fetch(url.toString());
 
       if (!res.ok) {
-        console.error(`❌ API Error: ${res.status} ${res.statusText}`);
         throw new Error(`API Error: ${res.status} ${res.statusText}`);
       }
 
       const result = await res.json();
-      console.log("✅ API Response:", result);
+
       setData(result);
-    } catch (err) {
-      console.error("❌ Fetch Error:", err);
+    } catch {
       setError("Something went wrong. Please try again.");
     } finally {
       setLoading(false);

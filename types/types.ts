@@ -1,14 +1,34 @@
+export type Ingredient = {
+  id: string;
+  name: string;
+  quantity?: number;
+};
+
 export type Recipe = {
-  id: number;
+  id: string;
   title: string;
   image: string;
-  usedIngredients?: { id: number; name: string }[];
+  usedIngredients?: Ingredient[];
   missedIngredientCount?: number;
 };
 
-export type DayPlan = {
+export type PlannedDayMeals = {
   day: string;
-  recipes: Recipe[];
+  meals: {
+    category: "Breakfast" | "Lunch" | "Dinner" | "Snack";
+    recipeId: string;
+    name?: string;
+    notes?: string;
+  }[];
+};
+
+export type LoggedMeal = {
+  id: string;
+  date: string;
+  category?: "Breakfast" | "Lunch" | "Dinner" | "Snack";
+  recipeId?: string;
+  name?: string;
+  notes?: string;
 };
 
 export const daysOfWeek = [
@@ -37,13 +57,15 @@ export const CATEGORY_OPTIONS: Readonly<CategoryOptions[]> = [
 ];
 
 export type InventoryItem = {
-  id: number;
+  id: string;
   name: string;
   category: CategoryOptions;
+  quantity?: number;
 };
 
 export type AppState = {
   inventory: InventoryItem[];
-  planner: DayPlan[];
+  planner: PlannedDayMeals[];
   customRecipes: Recipe[];
+  loggedMeals: LoggedMeal[];
 };

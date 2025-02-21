@@ -31,7 +31,7 @@ export default function Recipes() {
 
   return (
     <div className="max-w-5xl mx-auto py-12">
-      <h1 className="text-4xl font-bold mb-6 text-[#1E3229]">
+      <h1 className="text-3xl font-semibold tracking-tight text-neutral-900">
         🍽️ Find Recipes
       </h1>
 

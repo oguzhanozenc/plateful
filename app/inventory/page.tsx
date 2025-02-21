@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { useAppContext } from "@/context/AppContext";
+import { useInventoryContext } from "@/context/InventoryContext";
 import { CATEGORY_OPTIONS, CategoryOptions } from "@/types/types";
 import { Input } from "@/ui/input";
 import {
@@ -27,7 +27,7 @@ export default function FoodInventory() {
     setNewItemCategory,
     handleAddOrEditItem,
     resetForm,
-  } = useAppContext();
+  } = useInventoryContext();
 
   const [showAddItem, setShowAddItem] = useState(false);
 
@@ -105,7 +105,6 @@ export default function FoodInventory() {
                 )}
               >
                 <div className="flex gap-4 items-center">
-                  {/* ITEM NAME */}
                   <span className="font-semibold text-gray-900">
                     {item.name}
                   </span>

@@ -1,11 +1,12 @@
 "use client";
 
 import {
-  Home,
+  LayoutDashboard,
   Box,
   Calendar,
   ClipboardList,
   Plus,
+  ShoppingCart,
   Settings,
 } from "lucide-react";
 import {
@@ -23,21 +24,16 @@ import {
 import Link from "next/link";
 
 const menuItems = [
-  { title: "Home", route: "/", icon: Home },
+  { title: "Dashboard", route: "/", icon: LayoutDashboard },
   { title: "Food Inventory", route: "/inventory", icon: Box },
-  {
-    title: "Generate Recipes",
-    route: "/generate-recipe",
-    icon: ClipboardList,
-  },
-  { title: "Weekly Planner", route: "/weekly-planner", icon: Calendar },
+  { title: "Planner", route: "/planner", icon: Calendar },
   { title: "Recipes", route: "/recipes", icon: ClipboardList },
-  { title: "Shopping List", route: "/shopping-list", icon: Box },
+  { title: "Shopping List", route: "/shopping-list", icon: ShoppingCart },
   { title: "Create Recipe", route: "/create-recipe", icon: Plus },
 ];
 
 function PIcon() {
-  return <span className="text-xl font-bold text-[#519339]">P</span>;
+  return <span className="text-xl font-bold text-black">P</span>;
 }
 
 export function AppSidebar() {
@@ -49,10 +45,10 @@ export function AppSidebar() {
             <SidebarMenuButton asChild>
               <Link
                 href="/"
-                className="flex items-center hover-text-[#3c692c] transition-colors"
+                className="flex items-center text-black hover:text-black transition-colors"
               >
                 <PIcon />
-                <span>Plateful</span>
+                <span className="ml-2 font-semibold">Plateful</span>
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
@@ -83,6 +79,7 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
+
       <SidebarFooter>
         <SidebarMenu>
           <SidebarMenuItem>
