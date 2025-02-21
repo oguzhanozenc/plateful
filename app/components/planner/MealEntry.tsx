@@ -21,7 +21,7 @@ export default function MealEntry({
           size-4
           className="text-blue-600 hover:bg-blue-100"
           onClick={() => {
-            const newName = prompt("Edit meal:", meal.name) || meal.name;
+            const newName = prompt("Edit meal:", meal.name ?? "") ?? "";
             onEdit(meal.id, newName);
           }}
         >

@@ -121,7 +121,7 @@ export default function PlannerCell({ date }: { date: Date | null }) {
                       className="text-blue-600"
                       onClick={() => {
                         setEditingMeal(meal);
-                        setEditedMealName(meal.name);
+                        setEditedMealName(meal.name ?? "");
                         setIsEditDialogOpen(true);
                       }}
                     >
