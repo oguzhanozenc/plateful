@@ -17,9 +17,7 @@ export function RecipeCard({ recipe }: { recipe: Recipe }) {
     aggregateLikes,
     nutrition,
     cuisines,
-    vegetarian,
-    vegan,
-    glutenFree,
+    diets,
   } = recipe;
 
   const metaItems = [];
@@ -60,17 +58,18 @@ export function RecipeCard({ recipe }: { recipe: Recipe }) {
       </div>
 
       <div className="flex flex-wrap gap-2 text-xs text-white">
-        {cuisines?.length > 0 &&
-          cuisines.map((cuisine, index) => (
-            <span key={index} className="bg-indigo-500 px-2 py-1 rounded">
-              {cuisine}
-            </span>
-          ))}
-        {vegetarian && (
+        {cuisines?.map((cuisine) => (
+          <span key={cuisine} className="bg-indigo-500 px-2 py-1 rounded">
+            {cuisine}
+          </span>
+        ))}
+        {diets?.includes("vegetarian") && (
           <span className="bg-green-500 px-2 py-1 rounded">Vegetarian</span>
         )}
-        {vegan && <span className="bg-green-600 px-2 py-1 rounded">Vegan</span>}
-        {glutenFree && (
+        {diets?.includes("vegan") && (
+          <span className="bg-green-600 px-2 py-1 rounded">Vegan</span>
+        )}
+        {diets?.includes("gluten free") && (
           <span className="bg-yellow-500 px-2 py-1 rounded">Gluten-Free</span>
         )}
       </div>

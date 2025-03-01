@@ -1,80 +1,53 @@
 "use client";
 
 import { useState } from "react";
-import { Input } from "@/ui/input";
 import { Button } from "@/ui/button";
 import { Card } from "@/ui/card";
-import { useMealPlannerContext } from "@/context/MealPlannerContext";
-import { Recipe } from "@/types/types";
+import { Input } from "@/ui/input";
 
-export default function GenerateRecipe() {
-  const [ingredients, setIngredients] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [recipe, setRecipe] = useState(null);
-  const { addMeal } = useMealPlannerContext();
+type MealItem = {
+  id: string;
+  name: string;
+};
 
-  const handleGenerate = async () => {
-    setLoading(true);
-    try {
-      const response = await fetch("/api/generate-recipe", {
-        method: "POST",
-        body: JSON.stringify({ ingredients }),
-        headers: { "Content-Type": "application/json" },
-      });
-      const data = await response.json();
-      setRecipe(data);
-    } catch (error) {
-      console.error("Error generating recipe:", error);
-    }
-    setLoading(false);
+export default function Page() {
+  const [meals, setMeals] = useState<MealItem[]>([]);
+  const [mealName, setMealName] = useState("");
+
+  const addMeal = () => {
+    if (!mealName.trim()) return;
+    setMeals([...meals, { id: `${Date.now()}`, name: mealName }]);
+    setMealName("");
   };
 
   return (
     <div className="max-w-3xl mx-auto py-12">
-      <h1 className="text-3xl font-semibold tracking-tight">
-        ✨ Generate a Custom Recipe
-      </h1>
-      <p className="text-gray-600 mb-4">
-        Enter ingredients, and let AI create a recipe for you.
-      </p>
+      <h1 className="text-3xl font-semibold tracking-tight">🍽️ Meal Planner</h1>
 
-      <div className="flex flex-col sm:flex-row gap-4 mb-6">
+      <div className="flex flex-col sm:flex-row gap-4 mt-4">
         <Input
-          placeholder="Enter ingredients..."
-          value={ingredients}
-          onChange={(e) => setIngredients(e.target.value)}
+          placeholder="Enter meal name..."
+          value={mealName}
+          onChange={(e) => setMealName(e.target.value)}
         />
-        <Button
-          onClick={handleGenerate}
-          className="bg-indigo-600 hover:bg-indigo-700"
-        >
-          Generate
+        <Button onClick={addMeal} className="bg-indigo-600 hover:bg-indigo-700">
+          Add Meal
         </Button>
       </div>
 
-      {loading && <p>Generating...</p>}
-
-      {recipe && (
-        <RecipeCard
-          recipe={recipe}
-          onAddToPlanner={(recipe) => addMeal(recipe)}
-        />
-      )}
+      <div className="mt-6">
+        {meals.length > 0 ? (
+          <ul className="space-y-3">
+            {meals.map((meal) => (
+              <Card key={meal.id} className="p-4 shadow-sm">
+                {meal.name}
+              </Card>
+            ))}
+          </ul>
+        ) : (
+          <p className="text-gray-500 text-center mt-4">No meals added yet.</p>
+        )}
+      </div>
     </div>
-  );
-}
-
-function RecipeCard({ recipe, onAddToPlanner }) {
-  return (
-    <Card className="p-4 shadow-md hover:shadow-lg transition-all">
-      <h3 className="text-lg font-semibold mt-2">{recipe.title}</h3>
-      <p className="text-gray-700">{recipe.description}</p>
-      <Button
-        className="mt-2 w-full bg-blue-500 hover:bg-blue-600"
-        onClick={() => onAddToPlanner(recipe)}
-      >
-        Add to Planner
-      </Button>
-    </Card>
   );
 }

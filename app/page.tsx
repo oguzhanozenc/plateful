@@ -158,7 +158,6 @@ function FeatureCard({
 
 // RecentActivityCard Component (with Show More/Show Less)
 function RecentActivityCard({
-  date,
   displayDate,
   meals,
 }: {
