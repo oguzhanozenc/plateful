@@ -5,7 +5,6 @@ import { Input } from "@/ui/input";
 import { Button } from "@/ui/button";
 import { Card } from "@/ui/card";
 import { useMealPlannerContext } from "@/context/MealPlannerContext";
-import { Recipe } from "@/types/types";
 
 export default function GenerateRecipe() {
   const [ingredients, setIngredients] = useState("");
