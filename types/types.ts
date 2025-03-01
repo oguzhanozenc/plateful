@@ -17,6 +17,7 @@ export type Ingredient = {
 
 export type Recipe = {
   id: number;
+  description?: string;
   title: string;
   image: string;
   readyInMinutes?: number;
@@ -55,7 +56,7 @@ export type LoggedMeal = {
   date: string;
   category?: "Breakfast" | "Lunch" | "Dinner" | "Snack";
   recipeId?: number;
-  name?: string;
+  name: string;
   notes?: string;
 };
 

@@ -14,18 +14,18 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/ui/dialog";
+import { LoggedMeal } from "@/types/types";
 
-// Utility function to get the current week's dates (YYYY-MM-DD)
 const getCurrentWeekDates = () => {
   const today = new Date();
   const startOfWeek = new Date(today);
-  startOfWeek.setDate(today.getDate() - ((today.getDay() + 6) % 7)); // Ensure Monday start
+  startOfWeek.setDate(today.getDate() - ((today.getDay() + 6) % 7));
 
   return Array.from({ length: 7 }, (_, i) => {
     const date = new Date(startOfWeek);
     date.setDate(date.getDate() + i);
     return {
-      fullDate: date.toISOString().split("T")[0], // YYYY-MM-DD
+      fullDate: date.toISOString().split("T")[0],
       formattedDate: date.toLocaleDateString("en-US", {
         month: "short",
         day: "numeric",
@@ -35,11 +35,12 @@ const getCurrentWeekDates = () => {
 };
 
 export default function Home() {
-  const [isPlannerOpen, setIsPlannerOpen] = useState(false);
-  const { loggedMeals } = useMealPlannerContext();
-  const [showAll, setShowAll] = useState(false);
+  const [isPlannerOpen, setIsPlannerOpen] = useState<boolean>(false);
+  const { loggedMeals } = useMealPlannerContext() as {
+    loggedMeals: LoggedMeal[];
+  };
+  const [showAll, setShowAll] = useState<boolean>(false);
 
-  // Get current week's dates and attach meals
   const recentDays = getCurrentWeekDates().map((day) => ({
     ...day,
     meals: loggedMeals.filter((meal) => meal.date === day.fullDate),
@@ -47,7 +48,6 @@ export default function Home() {
 
   return (
     <div className="mx-auto max-w-5xl py-16 px-6 space-y-14">
-      {/* Dashboard Header */}
       <div className="flex flex-col md:flex-row justify-between items-center mb-10">
         <h1 className="text-3xl font-semibold tracking-tight text-neutral-900">
           Dashboard
@@ -68,7 +68,6 @@ export default function Home() {
         </Dialog>
       </div>
 
-      {/* Feature Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         <FeatureCard
           title="Manage Inventory"
@@ -93,7 +92,6 @@ export default function Home() {
         />
       </div>
 
-      {/* Recent Activity */}
       <h2 className="text-xl font-semibold text-neutral-800 mb-3">
         Recent Activity
       </h2>
@@ -102,7 +100,6 @@ export default function Home() {
           ({ fullDate, formattedDate, meals }) => (
             <RecentActivityCard
               key={fullDate}
-              date={fullDate}
               displayDate={formattedDate}
               meals={meals}
             />
@@ -110,7 +107,6 @@ export default function Home() {
         )}
       </div>
 
-      {/*  Show More Button */}
       {recentDays.length > 3 && (
         <div className="flex justify-center mt-4">
           <Button
@@ -126,7 +122,14 @@ export default function Home() {
   );
 }
 
-// FeatureCard Component
+type FeatureCardProps = {
+  title: string;
+  description: string;
+  icon: string;
+  link: string;
+  buttonText: string;
+};
+
 function FeatureCard({
   title,
   description,
@@ -156,15 +159,12 @@ function FeatureCard({
   );
 }
 
-// RecentActivityCard Component (with Show More/Show Less)
-function RecentActivityCard({
-  displayDate,
-  meals,
-}: {
-  date: string;
+type RecentActivityCardProps = {
   displayDate: string;
-  meals: { id: string; name: string }[];
-}) {
+  meals: LoggedMeal[];
+};
+
+function RecentActivityCard({ displayDate, meals }: RecentActivityCardProps) {
   return (
     <Card className="border border-neutral-300 bg-white shadow-lg hover:shadow-xl transition-shadow rounded-lg p-6 flex flex-col">
       <CardTitle className="text-sm font-semibold text-neutral-800">

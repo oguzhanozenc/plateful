@@ -1,53 +1,103 @@
 "use client";
 
 import { useState } from "react";
+import { Input } from "@/ui/input";
 import { Button } from "@/ui/button";
 import { Card } from "@/ui/card";
-import { Input } from "@/ui/input";
+import { useMealPlannerContext } from "@/context/MealPlannerContext";
+import { Recipe, LoggedMeal } from "@/types/types";
 
-type MealItem = {
-  id: string;
-  name: string;
-};
+export default function GenerateRecipe() {
+  const [ingredients, setIngredients] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
+  const [recipe, setRecipe] = useState<Recipe | null>(null);
+  const { addMeal } = useMealPlannerContext();
 
-export default function Page() {
-  const [meals, setMeals] = useState<MealItem[]>([]);
-  const [mealName, setMealName] = useState("");
+  const handleGenerate = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch("/api/generate-recipe", {
+        method: "POST",
+        body: JSON.stringify({ ingredients }),
+        headers: { "Content-Type": "application/json" },
+      });
 
-  const addMeal = () => {
-    if (!mealName.trim()) return;
-    setMeals([...meals, { id: `${Date.now()}`, name: mealName }]);
-    setMealName("");
+      if (!response.ok) {
+        throw new Error(`Error: ${response.status}`);
+      }
+
+      const data: Recipe = await response.json();
+      setRecipe(data);
+    } catch (error: unknown) {
+      console.error("Error generating recipe:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleAddToPlanner = () => {
+    if (!recipe) return;
+
+    const loggedMeal: LoggedMeal = {
+      id: crypto.randomUUID(),
+      date: new Date().toISOString().split("T")[0],
+      recipeId: recipe.id,
+      name: recipe.title,
+      notes: recipe.description || "",
+    };
+
+    addMeal(loggedMeal);
   };
 
   return (
     <div className="max-w-3xl mx-auto py-12">
-      <h1 className="text-3xl font-semibold tracking-tight">🍽️ Meal Planner</h1>
+      <h1 className="text-3xl font-semibold tracking-tight">
+        ✨ Generate a Custom Recipe
+      </h1>
+      <p className="text-gray-600 mb-4">
+        Enter ingredients, and let AI create a recipe for you.
+      </p>
 
-      <div className="flex flex-col sm:flex-row gap-4 mt-4">
+      <div className="flex flex-col sm:flex-row gap-4 mb-6">
         <Input
-          placeholder="Enter meal name..."
-          value={mealName}
-          onChange={(e) => setMealName(e.target.value)}
+          placeholder="Enter ingredients..."
+          value={ingredients}
+          onChange={(e) => setIngredients(e.target.value)}
         />
-        <Button onClick={addMeal} className="bg-indigo-600 hover:bg-indigo-700">
-          Add Meal
+        <Button
+          onClick={handleGenerate}
+          className="bg-indigo-600 hover:bg-indigo-700"
+          disabled={loading}
+        >
+          {loading ? "Generating..." : "Generate"}
         </Button>
       </div>
 
-      <div className="mt-6">
-        {meals.length > 0 ? (
-          <ul className="space-y-3">
-            {meals.map((meal) => (
-              <Card key={meal.id} className="p-4 shadow-sm">
-                {meal.name}
-              </Card>
-            ))}
-          </ul>
-        ) : (
-          <p className="text-gray-500 text-center mt-4">No meals added yet.</p>
-        )}
-      </div>
+      {loading && <p>Generating...</p>}
+
+      {recipe && (
+        <RecipeCard recipe={recipe} onAddToPlanner={handleAddToPlanner} />
+      )}
     </div>
+  );
+}
+
+type RecipeCardProps = {
+  recipe: Recipe;
+  onAddToPlanner: () => void;
+};
+
+function RecipeCard({ recipe, onAddToPlanner }: RecipeCardProps) {
+  return (
+    <Card className="p-4 shadow-md hover:shadow-lg transition-all">
+      <h3 className="text-lg font-semibold mt-2">{recipe.title}</h3>
+      <p className="text-gray-700">{recipe.description}</p>
+      <Button
+        className="mt-2 w-full bg-blue-500 hover:bg-blue-600"
+        onClick={onAddToPlanner}
+      >
+        Add to Planner
+      </Button>
+    </Card>
   );
 }
