@@ -34,7 +34,7 @@ export default function FoodInventory() {
   return (
     <div className="mx-auto max-w-3xl py-12 px-6">
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-4xl font-bold tracking-tight text-gray-900">
+        <h1 className="text-3xl font-semibold tracking-tight text-neutral-900">
           Inventory
         </h1>
         <Button

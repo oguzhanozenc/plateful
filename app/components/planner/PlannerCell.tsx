@@ -67,7 +67,9 @@ export default function PlannerCell({ date }: { date: Date | null }) {
         } hover:bg-gray-50`}
     >
       <div className="flex justify-between items-center">
-        <span className="text-gray-900 font-semibold">{date.getDate()}</span>
+        <span className="text-gray-900 font-semibold overflow-">
+          {date.getDate()}
+        </span>
         <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
           <DialogTrigger asChild>
             <Button variant="ghost" size="icon">

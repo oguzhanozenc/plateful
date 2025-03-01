@@ -1,22 +1,39 @@
 export type Ingredient = {
-  id: string;
+  id: number;
   name: string;
   quantity?: number;
+  unit?: string;
 };
 
 export type Recipe = {
-  id: string;
+  id: number;
   title: string;
   image: string;
+  readyInMinutes?: number;
+  servings?: number;
+  cuisines?: string[];
+  diets?: string[];
+  intolerances?: string[];
+  summary?: string;
   usedIngredients?: Ingredient[];
+  missedIngredients?: Ingredient[];
   missedIngredientCount?: number;
+  healthScore?: number;
+  aggregateLikes?: number;
+};
+
+export type Filters = {
+  cuisine: string;
+  diet: string;
+  intolerances: string;
+  maxReadyTime: string;
 };
 
 export type PlannedDayMeals = {
   day: string;
   meals: {
     category: "Breakfast" | "Lunch" | "Dinner" | "Snack";
-    recipeId: string;
+    recipeId: number;
     name?: string;
     notes?: string;
   }[];
@@ -26,9 +43,23 @@ export type LoggedMeal = {
   id: string;
   date: string;
   category?: "Breakfast" | "Lunch" | "Dinner" | "Snack";
-  recipeId?: string;
+  recipeId?: number;
   name?: string;
   notes?: string;
+};
+
+export type InventoryItem = {
+  id: string;
+  name: string;
+  category: CategoryOptions;
+  quantity?: number;
+};
+
+export type AppState = {
+  inventory: InventoryItem[];
+  planner: PlannedDayMeals[];
+  customRecipes: Recipe[];
+  loggedMeals: LoggedMeal[];
 };
 
 export const daysOfWeek = [
@@ -55,17 +86,3 @@ export const CATEGORY_OPTIONS: Readonly<CategoryOptions[]> = [
   "Grain",
   "Other",
 ];
-
-export type InventoryItem = {
-  id: string;
-  name: string;
-  category: CategoryOptions;
-  quantity?: number;
-};
-
-export type AppState = {
-  inventory: InventoryItem[];
-  planner: PlannedDayMeals[];
-  customRecipes: Recipe[];
-  loggedMeals: LoggedMeal[];
-};

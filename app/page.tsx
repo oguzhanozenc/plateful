@@ -1,35 +1,74 @@
+"use client";
+
+import { useState } from "react";
 import Link from "next/link";
 import { Button } from "@/ui/button";
 import { Card, CardTitle } from "@/ui/card";
+import PlannerView from "@/app/planner/page";
+import { useMealPlannerContext } from "@/context/MealPlannerContext";
 import { PlusIcon } from "lucide-react";
+import {
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/ui/dialog";
 
-type FeatureCardProps = {
-  title: string;
-  description: string;
-  icon: string;
-  link: string;
-  buttonText: string;
-};
+// Utility function to get the current week's dates (YYYY-MM-DD)
+const getCurrentWeekDates = () => {
+  const today = new Date();
+  const startOfWeek = new Date(today);
+  startOfWeek.setDate(today.getDate() - ((today.getDay() + 6) % 7)); // Ensure Monday start
 
-type RecentActivityCardProps = {
-  day: string;
+  return Array.from({ length: 7 }, (_, i) => {
+    const date = new Date(startOfWeek);
+    date.setDate(date.getDate() + i);
+    return {
+      fullDate: date.toISOString().split("T")[0], // YYYY-MM-DD
+      formattedDate: date.toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+      }),
+    };
+  });
 };
 
 export default function Home() {
+  const [isPlannerOpen, setIsPlannerOpen] = useState(false);
+  const { loggedMeals } = useMealPlannerContext();
+  const [showAll, setShowAll] = useState(false);
+
+  // Get current week's dates and attach meals
+  const recentDays = getCurrentWeekDates().map((day) => ({
+    ...day,
+    meals: loggedMeals.filter((meal) => meal.date === day.fullDate),
+  }));
+
   return (
     <div className="mx-auto max-w-5xl py-16 px-6 space-y-14">
+      {/* Dashboard Header */}
       <div className="flex flex-col md:flex-row justify-between items-center mb-10">
         <h1 className="text-3xl font-semibold tracking-tight text-neutral-900">
           Dashboard
         </h1>
-        <Link href="/new-plan" passHref>
-          <Button className="flex items-center gap-2 px-6 py-3 text-sm font-medium bg-black hover:bg-neutral-950 transform scale-102 translate-y-[-1px] transition-all duration-300 ease-in-out text-white rounded-lg shadow-lg transition-all">
-            <PlusIcon size={16} />
-            New Plan
-          </Button>
-        </Link>
+        <Dialog open={isPlannerOpen} onOpenChange={setIsPlannerOpen}>
+          <DialogTrigger asChild>
+            <Button className="flex items-center gap-2 px-6 py-3 text-sm font-medium bg-black hover:bg-neutral-950 text-white rounded-lg shadow-lg">
+              <PlusIcon size={16} />
+              New Plan
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="max-w-4xl w-full">
+            <DialogHeader>
+              <DialogTitle>Meal Planner</DialogTitle>
+            </DialogHeader>
+            <PlannerView />
+          </DialogContent>
+        </Dialog>
       </div>
 
+      {/* Feature Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         <FeatureCard
           title="Manage Inventory"
@@ -54,18 +93,40 @@ export default function Home() {
         />
       </div>
 
+      {/* Recent Activity */}
       <h2 className="text-xl font-semibold text-neutral-800 mb-3">
         Recent Activity
       </h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {["Monday", "Tuesday", "Wednesday"].map((day) => (
-          <RecentActivityCard key={day} day={day} />
-        ))}
+        {(showAll ? recentDays : recentDays.slice(0, 3)).map(
+          ({ fullDate, formattedDate, meals }) => (
+            <RecentActivityCard
+              key={fullDate}
+              date={fullDate}
+              displayDate={formattedDate}
+              meals={meals}
+            />
+          )
+        )}
       </div>
+
+      {/*  Show More Button */}
+      {recentDays.length > 3 && (
+        <div className="flex justify-center mt-4">
+          <Button
+            variant="outline"
+            onClick={() => setShowAll((prev) => !prev)}
+            className="text-sm"
+          >
+            {showAll ? "Show Less" : "Show More"}
+          </Button>
+        </div>
+      )}
     </div>
   );
 }
 
+// FeatureCard Component
 function FeatureCard({
   title,
   description,
@@ -95,18 +156,35 @@ function FeatureCard({
   );
 }
 
-function RecentActivityCard({ day }: RecentActivityCardProps) {
+// RecentActivityCard Component (with Show More/Show Less)
+function RecentActivityCard({
+  date,
+  displayDate,
+  meals,
+}: {
+  date: string;
+  displayDate: string;
+  meals: { id: string; name: string }[];
+}) {
   return (
     <Card className="border border-neutral-300 bg-white shadow-lg hover:shadow-xl transition-shadow rounded-lg p-6 flex flex-col">
       <CardTitle className="text-sm font-semibold text-neutral-800">
-        {day}
+        {displayDate}
       </CardTitle>
-      <p className="text-neutral-700 text-sm mt-2 flex-1">
-        No meals planned yet.
-      </p>
+      <div className="mt-2 flex flex-col gap-1 text-sm text-gray-700">
+        {meals.length > 0 ? (
+          meals.map((meal) => (
+            <div key={meal.id} className="flex items-center gap-2">
+              🍽 {meal.name}
+            </div>
+          ))
+        ) : (
+          <span className="text-gray-500 italic">No meals planned yet.</span>
+        )}
+      </div>
       <div className="mt-3 flex justify-end">
         <Link href="/planner" passHref>
-          <Button className="px-5 py-2.5 text-sm font-medium bg-neutral-200 hover:bg-neutral-300 border border-neutral-500 text-neutral-800 text-neutral-900 border border-neutral-300 rounded-lg transition-all">
+          <Button className="px-5 py-2.5 text-sm font-medium bg-neutral-200 hover:bg-neutral-300 border border-neutral-400 text-neutral-800 rounded-lg">
             View
           </Button>
         </Link>

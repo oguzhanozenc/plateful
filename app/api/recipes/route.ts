@@ -5,44 +5,33 @@ const SPOONACULAR_API_KEY = process.env.SPOONACULAR_API_KEY!;
 
 export async function GET(req: Request) {
   try {
-    console.log("📡 API Request Received:", req.url);
-
     const { searchParams } = new URL(req.url);
-    const ingredients = searchParams.get("ingredients") || "";
+    const query = searchParams.get("query")?.trim() || "";
     const number = searchParams.get("number") || "10";
+    const cuisine = searchParams.get("cuisine") || "";
     const diet = searchParams.get("diet") || "";
+    const intolerances = searchParams.get("intolerances") || "";
+    const maxReadyTime = searchParams.get("maxReadyTime") || "";
 
-    if (!ingredients) {
-      console.error("❌ Missing ingredients parameter");
-      return NextResponse.json(
-        { error: "Missing ingredients" },
-        { status: 400 }
-      );
-    }
+    let apiUrl = `${SPOONACULAR_API_URL}/recipes/complexSearch?apiKey=${SPOONACULAR_API_KEY}&number=${number}&addRecipeInformation=true&addRecipeNutrition=true&sort=popularity`;
 
-    // ✅ Construct API URL
-    const apiUrl = `${SPOONACULAR_API_URL}/recipes/complexSearch?apiKey=${SPOONACULAR_API_KEY}&includeIngredients=${ingredients}&number=${number}&diet=${
-      diet !== "Any" ? diet : ""
-    }&addRecipeInformation=true`;
+    if (query) apiUrl += `&query=${query}`;
+    if (cuisine) apiUrl += `&cuisine=${cuisine}`;
+    if (diet) apiUrl += `&diet=${diet}`;
+    if (intolerances) apiUrl += `&intolerances=${intolerances}`;
+    if (maxReadyTime) apiUrl += `&maxReadyTime=${maxReadyTime}`;
 
-    console.log("🔍 Fetching from Spoonacular:", apiUrl);
-
-    const res = await fetch(apiUrl, { cache: "no-store" });
-
+    console.log("📡 Fetching:", apiUrl);
+    const res = await fetch(apiUrl);
     if (!res.ok) {
-      console.error(`❌ API Request Failed: ${res.status} ${res.statusText}`);
-      return NextResponse.json(
-        { error: `API Error: ${res.statusText}` },
-        { status: res.status }
-      );
+      throw new Error(`API request failed: ${res.status} - ${res.statusText}`);
     }
 
     const data = await res.json();
-    console.log("✅ API Response:", data);
-
-    return NextResponse.json(data.results || []);
+    const recipes = data.recipes || data.results || [];
+    return NextResponse.json(recipes);
   } catch (error) {
-    console.error("❌ Route API Error:", error);
+    console.error("❌ API Error:", error);
     return NextResponse.json(
       { error: "Failed to fetch recipes" },
       { status: 500 }

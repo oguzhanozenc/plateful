@@ -3,9 +3,6 @@
 import { useRecipes } from "@/hooks/useRecipes";
 import { Input } from "@/ui/input";
 import { Button } from "@/ui/button";
-import { Card } from "@/ui/card";
-import { Skeleton } from "@/ui/skeleton";
-import { Recipe } from "@/types/types";
 import {
   Select,
   SelectTrigger,
@@ -13,119 +10,154 @@ import {
   SelectContent,
   SelectItem,
 } from "@/ui/select";
-import { Dialog, DialogTrigger, DialogContent, DialogTitle } from "@/ui/dialog";
+import { Card } from "@/ui/card";
+import { RecipeCard } from "@/app/components/RecipeCard";
+import { RecipeCardSkeleton } from "@/app/components/RecipeCardSkeleton";
+import { Filter, Search } from "lucide-react";
+
+const FilterSelect = ({
+  label,
+  value,
+  onChange,
+  options,
+}: {
+  label: string;
+  value: string;
+  onChange: (val: string) => void;
+  options: string[];
+}) => (
+  <Select value={value} onValueChange={onChange}>
+    <SelectTrigger className="w-40">
+      <SelectValue placeholder={label} />
+    </SelectTrigger>
+    <SelectContent>
+      {options.map((option) => (
+        <SelectItem key={option} value={option}>
+          {option}
+        </SelectItem>
+      ))}
+    </SelectContent>
+  </Select>
+);
 
 export default function Recipes() {
   const {
+    recipes,
     query,
     setQuery,
-    diet,
-    setDiet,
-    limit,
-    setLimit,
-    recipes,
+    filters,
+    setFilters,
+    handleSearch,
+    handleFilterApply,
+    resetFilters,
     loading,
     error,
-    handleSearch,
   } = useRecipes();
 
   return (
-    <div className="max-w-5xl mx-auto py-12">
-      <h1 className="text-3xl font-semibold tracking-tight text-neutral-900">
-        🍽️ Find Recipes
-      </h1>
+    <div className="bg-background min-h-screen flex flex-col px-6">
+      <header className="text-center max-w-4xl mx-auto w-full py-12">
+        <h1 className="text-4xl font-semibold text-gray-900 dark:text-white">
+          Discover & Save Recipes
+        </h1>
+        <p className="mt-2 text-lg text-gray-600 dark:text-gray-400">
+          Plan your meals effortlessly with curated recipes.
+        </p>
 
-      <div className="flex flex-col sm:flex-row gap-4 mb-6">
-        <Input
-          placeholder="Enter ingredients (e.g., tomato, cheese)..."
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          autoFocus
-        />
-        <Select value={limit} onValueChange={setLimit}>
-          <SelectTrigger>
-            <SelectValue placeholder="Limit" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="5">5</SelectItem>
-            <SelectItem value="10">10</SelectItem>
-            <SelectItem value="15">15</SelectItem>
-          </SelectContent>
-        </Select>
-        <Select value={diet} onValueChange={setDiet}>
-          <SelectTrigger>
-            <SelectValue placeholder="Dietary Preference" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="Any">Any</SelectItem>
-            <SelectItem value="vegetarian">Vegetarian</SelectItem>
-            <SelectItem value="vegan">Vegan</SelectItem>
-            <SelectItem value="gluten free">Gluten Free</SelectItem>
-          </SelectContent>
-        </Select>
-        <Button
-          onClick={handleSearch}
-          className="bg-green-600 hover:bg-green-700"
-        >
-          Search
-        </Button>
-      </div>
-
-      {error && <p className="text-red-500 text-center mb-4">{error}</p>}
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-        {loading ? (
-          Array.from({ length: 6 }).map((_, i) => (
-            <Skeleton key={i} className="h-40 w-full" />
-          ))
-        ) : recipes.length > 0 ? (
-          recipes.map((recipe) => (
-            <RecipeCard key={recipe.id} recipe={recipe} />
-          ))
-        ) : (
-          <p className="text-gray-500 text-center">
-            No recipes found. Try different ingredients.
-          </p>
-        )}
-      </div>
-    </div>
-  );
-}
-
-function RecipeCard({ recipe }: { recipe: Recipe }) {
-  return (
-    <Dialog>
-      <DialogTrigger className="w-full">
-        <Card className="p-4 shadow-md hover:shadow-lg transition-all cursor-pointer">
-          <div className="relative w-full h-40">
-            <img
-              src={recipe.image}
-              alt={recipe.title}
-              className="rounded-md w-full h-full object-cover"
-            />
-          </div>
-          <div className="mt-3">
-            <h3 className="text-lg font-semibold">{recipe.title}</h3>
-            <p className="text-gray-500 text-sm mt-1">
-              {recipe.missedIngredientCount} missing ingredients
-            </p>
-          </div>
+        <Card className="mt-6 p-4 shadow-md flex items-center gap-4 w-full max-w-lg mx-auto">
+          <Input
+            placeholder="Search for recipes..."
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            className="flex-1"
+          />
+          <Button onClick={handleSearch} size="icon">
+            <Search className="w-5 h-5" />
+          </Button>
         </Card>
-      </DialogTrigger>
-      <DialogContent>
-        <DialogTitle>{recipe.title}</DialogTitle>
-        <img
-          src={recipe.image}
-          alt={recipe.title}
-          className="rounded-md w-full h-52 object-cover mt-4"
+      </header>
+
+      <section className="flex flex-wrap justify-center gap-4 px-4">
+        <FilterSelect
+          label="Select Cuisine"
+          value={filters.cuisine}
+          onChange={(val) => setFilters((prev) => ({ ...prev, cuisine: val }))}
+          options={["Italian", "Mexican", "Chinese", "Indian", "American"]}
         />
-        <h3 className="text-lg font-semibold mt-4">Ingredients:</h3>
-        <ul className="list-disc pl-5 text-gray-700">
-          {recipe.usedIngredients?.map((ingredient) => (
-            <li key={ingredient.id}>{ingredient.name}</li>
-          ))}
-        </ul>
-      </DialogContent>
-    </Dialog>
+        <FilterSelect
+          label="Select Diet"
+          value={filters.diet}
+          onChange={(val) => setFilters((prev) => ({ ...prev, diet: val }))}
+          options={["Vegan", "Vegetarian", "Ketogenic", "Paleo", "Pescatarian"]}
+        />
+        <FilterSelect
+          label="Select Allergy"
+          value={filters.intolerances}
+          onChange={(val) =>
+            setFilters((prev) => ({ ...prev, intolerances: val }))
+          }
+          options={["Gluten", "Dairy", "Egg", "Nuts", "Shellfish"]}
+        />
+        <FilterSelect
+          label="Max Cooking Time"
+          value={filters.maxReadyTime}
+          onChange={(val) =>
+            setFilters((prev) => ({ ...prev, maxReadyTime: val }))
+          }
+          options={["15", "30", "60", "120"]}
+        />
+
+        <Button
+          variant="outline"
+          onClick={handleFilterApply}
+          className="flex items-center"
+        >
+          <Filter className="w-4 h-4 mr-2" /> Filter Recipes
+        </Button>
+
+        <Button
+          variant="secondary"
+          onClick={resetFilters}
+          className="flex items-center"
+        >
+          <Filter className="w-4 h-4 mr-2" /> Reset Filters
+        </Button>
+      </section>
+
+      <main className="flex-1 py-10 max-w-6xl mx-auto">
+        {loading ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {Array.from({ length: 6 }).map((_, index) => (
+              <RecipeCardSkeleton key={index} />
+            ))}
+          </div>
+        ) : recipes.length > 0 ? (
+          <section>
+            <h2 className="text-xl font-medium text-gray-900 dark:text-white mb-4">
+              {query ? "Search Results" : "Filtered Results"}
+            </h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {recipes.map((recipe) => (
+                <RecipeCard key={recipe.id} recipe={recipe} />
+              ))}
+            </div>
+          </section>
+        ) : (
+          <section>
+            <h2 className="text-xl font-medium text-gray-900 dark:text-white mb-4">
+              No Recipes Found
+            </h2>
+            {!loading && (
+              <div className="text-center mt-6">
+                <p className="text-gray-500 text-lg">
+                  {error ||
+                    "Try changing filters or searching for something else."}
+                </p>
+              </div>
+            )}
+          </section>
+        )}
+      </main>
+    </div>
   );
 }

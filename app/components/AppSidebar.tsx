@@ -28,6 +28,7 @@ const menuItems = [
   { title: "Food Inventory", route: "/inventory", icon: Box },
   { title: "Planner", route: "/planner", icon: Calendar },
   { title: "Recipes", route: "/recipes", icon: ClipboardList },
+  { title: "Generate Recipe", route: "/generate-recipe", icon: Plus },
   { title: "Shopping List", route: "/shopping-list", icon: ShoppingCart },
   { title: "Create Recipe", route: "/create-recipe", icon: Plus },
 ];
