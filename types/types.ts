@@ -1,3 +1,13 @@
+export type Nutrient = {
+  name: string;
+  amount: number;
+  unit: string;
+};
+
+export type Nutrition = {
+  nutrients: Nutrient[];
+};
+
 export type Ingredient = {
   id: number;
   name: string;
@@ -20,6 +30,7 @@ export type Recipe = {
   missedIngredientCount?: number;
   healthScore?: number;
   aggregateLikes?: number;
+  nutrition?: Nutrition;
 };
 
 export type Filters = {
