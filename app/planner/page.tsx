@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import { useCalendarContext } from "@/context/CalendarContext";
 import { Button } from "@/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
@@ -10,11 +11,25 @@ export default function PlannerView() {
   const { currentDate, setCurrentDate, view, setView, getDays, changeDate } =
     useCalendarContext();
 
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 768) {
+        setView("week");
+      }
+    };
+
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, [setView]);
+
   return (
-    <div className="w-full min-w-full max-w-full p-6">
-      <div className="border-b pb-3 mb-4 flex justify-between items-center">
-        <h1 className="text-3xl font-semibold">Meal Planner</h1>
-        <div className="flex items-center gap-3">
+    <div className="w-full min-w-full max-w-full p-6 h-full min-h-screen">
+      <div className="border-b pb-3 mb-4 flex flex-wrap justify-center md:justify-between items-center">
+        <h1 className="text-2xl md:text-3xl font-semibold text-center">
+          Meal Planner
+        </h1>
+        <div className="flex flex-wrap justify-center gap-2">
           <Button
             variant="ghost"
             size-icon
@@ -39,7 +54,7 @@ export default function PlannerView() {
         </div>
       </div>
 
-      <div className="grid grid-cols-7 gap-2 w-full">
+      <div className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-2 w-full auto-rows-fr">
         {getDays().map((date, index) => (
           <PlannerCell key={index} date={date} />
         ))}

@@ -8,6 +8,7 @@ import {
   Plus,
   ShoppingCart,
   Settings,
+  Menu,
 } from "lucide-react";
 
 import {
@@ -21,6 +22,8 @@ import {
   SidebarMenuItem,
   SidebarHeader,
   SidebarFooter,
+  SidebarProvider,
+  SidebarTrigger,
 } from "@/ui/sidebar";
 
 import Link from "next/link";
@@ -38,68 +41,77 @@ const menuItems = [
 
 export function AppSidebar() {
   return (
-    <Sidebar collapsible="icon">
-      <SidebarHeader>
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <SidebarMenuButton asChild>
-              <Link
-                href="/"
-                className="flex items-center text-black hover:text-black transition-colors"
-              >
-                <Image
-                  src="/logo-black.png"
-                  width={24}
-                  height={24}
-                  alt="logo"
-                />
-                <span className="ml-2 font-semibold">Plateful</span>
-              </Link>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        </SidebarMenu>
-      </SidebarHeader>
-
-      <SidebarContent>
-        <SidebarGroup>
-          <SidebarGroupLabel className="text-[#2a4621]">
-            Navigation
-          </SidebarGroupLabel>
-          <SidebarGroupContent>
+    <SidebarProvider>
+      <div className="flex-shrink-0 min-h-screen  min-h-screen">
+        <Sidebar collapsible="icon">
+          <SidebarHeader className="flex items-center justify-between ">
             <SidebarMenu>
-              {menuItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
+              <SidebarMenuItem>
+                <div>
+                  <SidebarTrigger className="flex justify-self-end items-center">
+                    <Menu className="w-5 h-5 text-gray-500" />
+                  </SidebarTrigger>
                   <SidebarMenuButton asChild>
                     <Link
-                      href={item.route}
-                      className="flex items-center text-[#2D3E3A] hover:text-[#14250e] transition-colors"
+                      href="/"
+                      className="flex items-center text-black hover:text-black transition-colors"
                     >
-                      <item.icon className="mr-3 w-5 h-5 text-[#2D3E3A]" />
-                      <span>{item.title}</span>
+                      <Image
+                        src="/logo-black.png"
+                        width={24}
+                        height={24}
+                        alt="logo"
+                      />
+                      <span className="ml-2 font-semibold">Plateful</span>
                     </Link>
                   </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
+                </div>
+              </SidebarMenuItem>
             </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-      </SidebarContent>
+          </SidebarHeader>
 
-      <SidebarFooter>
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <SidebarMenuButton asChild>
-              <Link
-                href="/settings"
-                className="flex items-center text-[#2a4621] hover:text-[#14250e] transition-colors"
-              >
-                <Settings className="mr-3 w-5 h-5 text-[#2D3E3A]" />
-                <span>Settings</span>
-              </Link>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        </SidebarMenu>
-      </SidebarFooter>
-    </Sidebar>
+          <SidebarContent className="mt-2">
+            <SidebarGroup>
+              <SidebarGroupLabel className="text-[#2a4621]">
+                Navigation
+              </SidebarGroupLabel>
+              <SidebarGroupContent>
+                <SidebarMenu>
+                  {menuItems.map((item) => (
+                    <SidebarMenuItem key={item.title}>
+                      <SidebarMenuButton asChild>
+                        <Link
+                          href={item.route}
+                          className="flex items-center text-[#2D3E3A] hover:text-[#14250e] transition-colors"
+                        >
+                          <item.icon className="mr-3 w-5 h-5 text-[#2D3E3A]" />
+                          <span>{item.title}</span>
+                        </Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  ))}
+                </SidebarMenu>
+              </SidebarGroupContent>
+            </SidebarGroup>
+          </SidebarContent>
+
+          <SidebarFooter>
+            <SidebarMenu>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild>
+                  <Link
+                    href="/settings"
+                    className="flex items-center text-[#2a4621] hover:text-[#14250e] transition-colors"
+                  >
+                    <Settings className="mr-3 w-5 h-5 text-[#2D3E3A]" />
+                    <span>Settings</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            </SidebarMenu>
+          </SidebarFooter>
+        </Sidebar>
+      </div>
+    </SidebarProvider>
   );
 }

@@ -1,13 +1,8 @@
-"use client";
-
-import { SidebarProvider, SidebarTrigger } from "@/ui/sidebar";
 import { AppSidebar } from "@/app/components/AppSidebar";
 import { AppProvider } from "@/context/AppContext";
 import { MealPlannerProvider } from "@/context/MealPlannerContext";
 import { InventoryProvider } from "@/context/InventoryContext";
 import { CalendarProvider } from "@/context/CalendarContext";
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 import "@/styles/global.css";
 
 export default function RootLayout({
@@ -26,21 +21,20 @@ export default function RootLayout({
           content="Plateful helps you manage ingredients, generate recipes, and plan your meals efficiently."
         />
       </head>
-      <body className="relative min-h-screen bg-gradient-to-b from-white via-[#f8fbff] to-[#eaf2fd]">
+      <body className="min-h-screen flex bg-gradient-to-b from-white via-[#f8fbff] to-[#eaf2fd]">
         <AppProvider>
           <InventoryProvider>
             <CalendarProvider>
               <MealPlannerProvider>
-                <SidebarProvider>
-                  <div className="relative flex">
+                <div className="flex min-h-screen w-full">
+                  <aside className="transition-all duration-300">
                     <AppSidebar />
-                    <main className="flex-1 p-6">
-                      <SidebarTrigger />
-                      <ToastContainer position="top-right" autoClose={3000} />
-                      {children}
-                    </main>
-                  </div>
-                </SidebarProvider>
+                  </aside>
+
+                  <main className="flex-1 min-w-0 p-6 transition-all duration-300">
+                    {children}
+                  </main>
+                </div>
               </MealPlannerProvider>
             </CalendarProvider>
           </InventoryProvider>

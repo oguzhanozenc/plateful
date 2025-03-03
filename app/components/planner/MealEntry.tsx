@@ -13,9 +13,9 @@ export default function MealEntry({
   onDelete: (id: string) => void;
 }) {
   return (
-    <div className="text-xs px-2 py-1 rounded-md flex justify-between items-center bg-gray-100 text-gray-900">
-      <span>{meal.name}</span>
-      <div className="flex gap-1">
+    <div className="text-xs px-2 py-1 rounded-md flex flex-wrap justify-between items-center bg-gray-100 text-gray-900">
+      <span className="truncate">{meal.name}</span>
+      <div className="flex gap-1 flex-wrap">
         <Button
           variant="ghost"
           size-4
