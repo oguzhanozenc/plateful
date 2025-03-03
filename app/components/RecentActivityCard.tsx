@@ -15,7 +15,7 @@ export default function RecentActivityCard({
   meals,
 }: RecentActivityCardProps) {
   return (
-    <Card className="border border-neutral-300 bg-white shadow-lg hover:shadow-xl transition-shadow duration-500 ease-[cubic-bezier(0.25,0.8,0.25,1)] rounded-lg p-6 flex flex-col">
+    <Card className="flex border border-neutral-300 bg-white shadow-lg hover:shadow-xl transition-shadow duration-500 ease-[cubic-bezier(0.25,0.8,0.25,1)] rounded-lg p-6 flex flex-col">
       <CardTitle className="text-sm font-semibold text-neutral-800">
         {displayDate}
       </CardTitle>

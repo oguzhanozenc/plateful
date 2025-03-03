@@ -24,7 +24,7 @@ export default function PlannerView() {
   }, [setView]);
 
   return (
-    <div className="w-full min-w-full max-w-full p-6 h-full min-h-screen">
+    <div className="mx-auto w-full min-wfull max-w-full h-full min-h-screen py-16 px-6 space-y-14">
       <div className="border-b pb-3 mb-4 flex flex-wrap justify-center md:justify-between items-center">
         <h1 className="text-2xl md:text-3xl font-semibold text-center">
           Meal Planner
@@ -54,7 +54,7 @@ export default function PlannerView() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-2 w-full auto-rows-fr">
+      <div className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-2 w-full auto-rows-fr ">
         {getDays().map((date, index) => (
           <PlannerCell key={index} date={date} />
         ))}

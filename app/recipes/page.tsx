@@ -44,9 +44,9 @@ export default function Recipes() {
   const hasActiveFilters = Object.values(filters).some((val) => val);
 
   return (
-    <div className="min-h-screen flex flex-col px-6">
+    <div className="mx-auto w-full min-wfull max-w-full h-full min-h-screen py-16 px-6 space-y-14">
       {/* Header Section */}
-      <header className="text-center max-w-4xl mx-auto w-full py-12">
+      <header>
         <h1 className="text-4xl font-semibold text-gray-900 dark:text-white">
           Discover & Save Recipes
         </h1>
@@ -55,7 +55,7 @@ export default function Recipes() {
         </p>
 
         {/* Search & Filters Row */}
-        <div className="relative mt-6 w-full max-w-lg mx-auto flex gap-2">
+        <div className="flex gap-2 justify-self-start mt-6">
           <Input
             placeholder="Search for recipes..."
             value={query}

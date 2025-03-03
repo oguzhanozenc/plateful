@@ -50,29 +50,30 @@ export default function GenerateRecipe() {
   };
 
   return (
-    <div className="max-w-3xl mx-auto py-12">
-      <h1 className="text-3xl font-semibold tracking-tight">
-        ✨ Generate a Custom Recipe
-      </h1>
-      <p className="text-gray-600 mb-4">
-        Enter ingredients, and let AI create a recipe for you.
-      </p>
+    <div className="mx-auto w-full min-wfull max-w-full h-full min-h-screen py-16 px-6 space-y-14">
+      <div>
+        <h1 className="text-3xl font-semibold tracking-tight">
+          ✨ Generate a Custom Recipe
+        </h1>
+        <p className="text-gray-600 mb-4">
+          Enter ingredients, and let AI create a recipe for you.
+        </p>
 
-      <div className="flex flex-col sm:flex-row gap-4 mb-6">
-        <Input
-          placeholder="Enter ingredients..."
-          value={ingredients}
-          onChange={(e) => setIngredients(e.target.value)}
-        />
-        <Button
-          onClick={handleGenerate}
-          className="bg-indigo-600 hover:bg-indigo-700"
-          disabled={loading}
-        >
-          {loading ? "Generating..." : "Generate"}
-        </Button>
+        <div className="flex flex-col sm:flex-row gap-4 mb-6 justify-self-start">
+          <Input
+            placeholder="Enter ingredients..."
+            value={ingredients}
+            onChange={(e) => setIngredients(e.target.value)}
+          />
+          <Button
+            onClick={handleGenerate}
+            className="bg-indigo-600 hover:bg-indigo-700"
+            disabled={loading}
+          >
+            {loading ? "Generating..." : "Generate"}
+          </Button>
+        </div>
       </div>
-
       {loading && <p>Generating...</p>}
 
       {recipe && (

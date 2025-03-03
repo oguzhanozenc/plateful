@@ -20,7 +20,7 @@ export default function FeatureCard({
   buttonText,
 }: FeatureCardProps) {
   return (
-    <Card className="border border-neutral-200 bg-white shadow-md hover:shadow-lg transition-shadow duration-500 ease-out rounded-lg p-6 flex flex-col gap-4">
+    <Card className="flex border border-neutral-200 bg-white shadow-md hover:shadow-lg transition-shadow duration-500 ease-out rounded-lg p-6 flex flex-col gap-4">
       <div className="flex items-start gap-4">
         <div className="text-3xl">{icon}</div>
         <div className="flex-1">

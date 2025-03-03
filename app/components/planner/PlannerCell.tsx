@@ -21,7 +21,7 @@ export default function PlannerCell({ date }: { date: Date | null }) {
   const [newMeal, setNewMeal] = useState("");
   const [editedMealName, setEditedMealName] = useState("");
 
-  if (!date) return <div className="border p-2 bg-gray-100" />;
+  if (!date) return <div className="border p-2 bg-gray-100 rounded-lg" />;
 
   const dateKey = date.toISOString().split("T")[0];
   const mealList: LoggedMeal[] = loggedMeals.filter(

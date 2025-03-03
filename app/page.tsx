@@ -48,8 +48,8 @@ export default function Home() {
   }));
 
   return (
-    <div className="mx-auto max-w-5xl py-16 px-6 space-y-14">
-      <div className="flex flex-col md:flex-row justify-between items-center mb-10">
+    <div className="mx-auto w-full min-wfull max-w-full h-full min-h-screen py-16 px-6 space-y-14">
+      <div className="flex  md:flex-row justify-between items-center mb-10 gap-4">
         <h1 className="text-3xl font-semibold tracking-tight text-neutral-900">
           Dashboard
         </h1>
@@ -69,7 +69,7 @@ export default function Home() {
         </Dialog>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 px-4">
         {FEATURE_CARDS.map((card) => (
           <FeatureCard key={card.title} {...card} />
         ))}
@@ -78,7 +78,7 @@ export default function Home() {
       <h2 className="text-xl font-semibold text-neutral-800 mb-3">
         Recent Activity
       </h2>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 px-4">
         {(showAll ? recentDays : recentDays.slice(0, 3)).map(
           ({ fullDate, formattedDate, meals }) => (
             <RecentActivityCard
