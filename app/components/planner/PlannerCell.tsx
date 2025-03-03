@@ -95,9 +95,11 @@ export default function PlannerCell({ date }: { date: Date | null }) {
                   >
                     <LucideTrash size={16} className="mr-1" /> Delete
                   </Button>
-                  <Button onClick={() => editMeal(meal.id, editedMealName)}>
-                    <LucideEdit size={16} className="mr-1" /> Save Changes
-                  </Button>
+                  <DialogTrigger asChild>
+                    <Button onClick={() => editMeal(meal.id, editedMealName)}>
+                      <LucideEdit size={16} className="mr-1" /> Save Changes
+                    </Button>
+                  </DialogTrigger>
                 </DialogFooter>
               </DialogContent>
             </Dialog>

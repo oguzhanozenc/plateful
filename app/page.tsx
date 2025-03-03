@@ -64,7 +64,9 @@ export default function Home() {
             <DialogHeader>
               <DialogTitle>Meal Planner</DialogTitle>
             </DialogHeader>
-            <PlannerView />
+            <div className="flex max-w-screen max-h-screen overflow-y-auto">
+              <PlannerView />
+            </div>
           </DialogContent>
         </Dialog>
       </div>
