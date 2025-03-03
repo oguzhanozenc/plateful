@@ -1,35 +1,50 @@
 "use client";
 
-import { Card } from "@/ui/card";
+import { Skeleton } from "@/ui/skeleton";
+import { Separator } from "@/ui/separator";
 
 export function RecipeDetailsSkeleton() {
   return (
-    <div className="max-w-5xl mx-auto py-12 px-4 animate-pulse">
-      <Card className="border rounded-md shadow-sm p-6 md:flex md:flex-row md:gap-8 bg-white">
-        {/* Image Placeholder */}
-        <div className="md:w-1/2 mb-6 md:mb-0">
-          <div className="w-full h-64 bg-gray-300 rounded-md"></div>
+    <div className="max-w-3xl mx-auto py-12 px-6 animate-pulse">
+      {/* Top Action Bar */}
+      <div className="flex justify-between items-center sticky top-0 bg-background p-4 shadow-md rounded-lg z-10">
+        <Skeleton className="h-10 w-24 bg-secondary" />
+        <Skeleton className="h-10 w-32 bg-secondary" />
+      </div>
+
+      {/* Image Skeleton */}
+      <Skeleton className="h-64 w-full rounded-lg bg-secondary mt-6" />
+
+      <div className="mt-6 space-y-4">
+        <Skeleton className="h-10 w-3/5 bg-secondary" />
+        <div className="flex gap-3">
+          <Skeleton className="h-6 w-16 bg-secondary" />
+          <Skeleton className="h-6 w-20 bg-secondary" />
+          <Skeleton className="h-6 w-24 bg-secondary" />
         </div>
+      </div>
 
-        {/* Content Placeholder */}
-        <div className="md:w-1/2">
-          <div className="h-6 bg-gray-300 w-3/4 rounded mb-4"></div>
-          <div className="h-4 bg-gray-300 w-1/2 rounded mb-4"></div>
+      <Separator className="my-6" />
 
-          {/* Ingredients */}
-          <div className="h-4 bg-gray-300 w-full rounded mb-2"></div>
-          <div className="h-4 bg-gray-300 w-2/3 rounded mb-2"></div>
-          <div className="h-4 bg-gray-300 w-1/2 rounded mb-2"></div>
-
-          {/* Instructions */}
-          <div className="h-4 bg-gray-300 w-full rounded mb-2"></div>
-          <div className="h-4 bg-gray-300 w-2/3 rounded mb-2"></div>
-          <div className="h-4 bg-gray-300 w-1/2 rounded mb-2"></div>
-
-          {/* Button */}
-          <div className="w-full h-10 bg-gray-300 rounded mt-6"></div>
+      {/* Ingredients */}
+      <div className="space-y-4">
+        <Skeleton className="h-6 w-32 bg-secondary" />
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+          <Skeleton className="h-5 w-24 bg-secondary" />
+          <Skeleton className="h-5 w-20 bg-secondary" />
+          <Skeleton className="h-5 w-32 bg-secondary" />
         </div>
-      </Card>
+      </div>
+
+      <Separator className="my-6" />
+
+      {/* Instructions */}
+      <div className="space-y-4">
+        <Skeleton className="h-6 w-32 bg-secondary" />
+        <Skeleton className="h-5 w-full bg-secondary mb-2" />
+        <Skeleton className="h-5 w-2/3 bg-secondary mb-2" />
+        <Skeleton className="h-5 w-1/2 bg-secondary mb-2" />
+      </div>
     </div>
   );
 }

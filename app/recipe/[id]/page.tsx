@@ -2,8 +2,8 @@
 
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { Card } from "@/ui/card";
 import { Button } from "@/ui/button";
+import { ArrowLeft, Bookmark } from "lucide-react";
 import { RecipeDetailsSkeleton } from "@/app/components/RecipeDetailsSkeleton";
 
 type Recipe = {
@@ -32,11 +32,9 @@ export default function RecipeDetails() {
         const data: Recipe = await res.json();
         setRecipe(data);
       } catch (err: unknown) {
-        if (err instanceof Error) {
-          setError(err.message);
-        } else {
-          setError("An unknown error occurred.");
-        }
+        setError(
+          err instanceof Error ? err.message : "An unknown error occurred."
+        );
       } finally {
         setLoading(false);
       }
@@ -46,46 +44,81 @@ export default function RecipeDetails() {
   }, [params.id]);
 
   if (loading) return <RecipeDetailsSkeleton />;
-
   if (error || !recipe)
     return (
-      <p className="text-center text-red-500 mt-8">
-        {error || "Recipe not found."}
-      </p>
+      <div className="flex flex-col items-center justify-center min-h-[50vh]">
+        <p className="text-red-500 text-lg font-medium">
+          {error || "Recipe not found."}
+        </p>
+        <Button
+          variant="secondary"
+          onClick={() => router.back()}
+          className="mt-4"
+        >
+          <ArrowLeft className="w-4 h-4 mr-2" /> Go Back
+        </Button>
+      </div>
     );
 
   return (
-    <div className="max-w-5xl mx-auto py-12 px-4">
-      <Card className="border rounded-md shadow-sm p-6 md:flex md:flex-row md:gap-8 bg-white">
-        <div className="md:w-1/2 mb-6 md:mb-0">
-          <img
-            src={recipe.image}
-            alt={recipe.title}
-            className="w-full h-auto object-cover rounded-md"
-          />
+    <div className="max-w-4xl mx-auto py-12 px-6">
+      <div className="flex justify-between items-center sticky top-0 bg-white p-4 border-b z-10">
+        <Button variant="ghost" onClick={() => router.back()}>
+          <ArrowLeft className="w-5 h-5 mr-2" /> Back
+        </Button>
+        <Button variant="outline">
+          <Bookmark className="w-4 h-4 mr-2" /> Save to Planner
+        </Button>
+      </div>
+
+      <div className="relative rounded-lg overflow-hidden">
+        <img
+          src={recipe.image}
+          alt={recipe.title}
+          className="w-full h-80 object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+      </div>
+
+      <div className="mt-6 space-y-6">
+        <h1 className="text-4xl font-bold text-gray-900">{recipe.title}</h1>
+
+        <div className="flex flex-wrap gap-6 text-sm text-gray-700 font-medium">
+          <span className="px-3 py-1 bg-gray-200 rounded-full">
+            ⏳ {recipe.readyInMinutes} min
+          </span>
+          <span className="px-3 py-1 bg-gray-200 rounded-full">
+            🍽️ Serves {recipe.servings}
+          </span>
+          <span className="px-3 py-1 bg-gray-200 rounded-full">
+            🔥 Health: {recipe.healthScore}
+          </span>
+          <span className="px-3 py-1 bg-gray-200 rounded-full">
+            👍 {recipe.aggregateLikes} Likes
+          </span>
         </div>
 
-        <div className="md:w-1/2">
-          <h1 className="text-3xl font-light text-gray-900 mb-4">
-            {recipe.title}
-          </h1>
-          <p className="text-sm text-gray-600">
-            🔥 Health Score: {recipe.healthScore} | 👍 {recipe.aggregateLikes}{" "}
-            Likes
-          </p>
-
-          <h3 className="text-xl font-semibold mt-6">Ingredients</h3>
-          <ul className="list-disc list-inside mt-2 text-gray-700">
+        <section className="bg-white shadow-sm rounded-lg p-6">
+          <h3 className="text-lg font-semibold mb-4 text-gray-900">
+            Ingredients
+          </h3>
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
             {recipe.extendedIngredients.map((ingredient, index) => (
-              <li key={index}>{ingredient.original}</li>
+              <span key={index} className="p-2 bg-gray-100 rounded-md">
+                ✅ {ingredient.original}
+              </span>
             ))}
-          </ul>
+          </div>
+        </section>
 
-          <h3 className="text-xl font-semibold mt-6">Instructions</h3>
-          <ol className="list-decimal list-inside mt-2 text-gray-700">
+        <section className="bg-white shadow-sm rounded-lg p-6">
+          <h3 className="text-lg font-semibold mb-4 text-gray-900">
+            Instructions
+          </h3>
+          <ol className="list-decimal list-inside text-gray-700 space-y-3">
             {recipe.analyzedInstructions.length > 0 ? (
               recipe.analyzedInstructions[0].steps.map((step, index) => (
-                <li key={index} className="py-2">
+                <li key={index} className="bg-gray-100 p-3 rounded-md">
                   {step.step}
                 </li>
               ))
@@ -93,15 +126,8 @@ export default function RecipeDetails() {
               <p className="text-gray-500">No instructions available.</p>
             )}
           </ol>
-
-          <Button
-            onClick={() => router.back()}
-            className="mt-8 px-6 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium"
-          >
-            Go Back
-          </Button>
-        </div>
-      </Card>
+        </section>
+      </div>
     </div>
   );
 }

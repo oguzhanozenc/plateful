@@ -9,6 +9,7 @@ import {
   ShoppingCart,
   Settings,
 } from "lucide-react";
+
 import {
   Sidebar,
   SidebarContent,
@@ -21,7 +22,9 @@ import {
   SidebarHeader,
   SidebarFooter,
 } from "@/ui/sidebar";
+
 import Link from "next/link";
+import Image from "next/image";
 
 const menuItems = [
   { title: "Dashboard", route: "/", icon: LayoutDashboard },
@@ -32,10 +35,6 @@ const menuItems = [
   { title: "Shopping List", route: "/shopping-list", icon: ShoppingCart },
   { title: "Create Recipe", route: "/create-recipe", icon: Plus },
 ];
-
-function PIcon() {
-  return <span className="text-xl font-bold text-black">P</span>;
-}
 
 export function AppSidebar() {
   return (
@@ -48,7 +47,12 @@ export function AppSidebar() {
                 href="/"
                 className="flex items-center text-black hover:text-black transition-colors"
               >
-                <PIcon />
+                <Image
+                  src="/logo-black.png"
+                  width={24}
+                  height={24}
+                  alt="logo"
+                />
                 <span className="ml-2 font-semibold">Plateful</span>
               </Link>
             </SidebarMenuButton>

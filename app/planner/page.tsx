@@ -11,7 +11,7 @@ export default function PlannerView() {
     useCalendarContext();
 
   return (
-    <div className="w-full min-w-full max-w-full p-6 bg-white">
+    <div className="w-full min-w-full max-w-full p-6">
       <div className="border-b pb-3 mb-4 flex justify-between items-center">
         <h1 className="text-3xl font-semibold">Meal Planner</h1>
         <div className="flex items-center gap-3">

@@ -26,13 +26,13 @@ export default function RootLayout({
           content="Plateful helps you manage ingredients, generate recipes, and plan your meals efficiently."
         />
       </head>
-      <body>
+      <body className="relative min-h-screen bg-gradient-to-b from-white via-[#f8fbff] to-[#eaf2fd]">
         <AppProvider>
           <InventoryProvider>
             <CalendarProvider>
               <MealPlannerProvider>
                 <SidebarProvider>
-                  <div className="flex">
+                  <div className="relative flex">
                     <AppSidebar />
                     <main className="flex-1 p-6">
                       <SidebarTrigger />
