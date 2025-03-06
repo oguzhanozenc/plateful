@@ -1,6 +1,8 @@
 "use client";
 
+import { useState, useEffect, useCallback } from "react";
 import { useRecipes } from "@/hooks/useRecipes";
+import { useDebounce } from "@/hooks/useDebounce";
 import { Input } from "@/ui/input";
 import { Button } from "@/ui/button";
 import { RecipeCard } from "@/app/components/RecipeCard";
@@ -10,22 +12,35 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/ui/popover";
 import { Badge } from "@/ui/badge";
 import { Separator } from "@/ui/separator";
 import { ScrollArea } from "@/ui/scroll-area";
-import { useState } from "react";
-import { Filters } from "@/types/types";
+import type { Filters } from "@/types/types";
+import Title from "@/app/components/Title";
 
-export default function Recipes() {
+export default function RecipeList() {
   const {
     recipes,
     query,
     setQuery,
-    filters = { cuisine: "", diet: "", intolerances: "", maxReadyTime: "" },
+    filters,
     setFilters,
     handleSearch,
     resetFilters,
     loading,
+    error,
   } = useRecipes();
 
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const debouncedQuery = useDebounce(query, 300);
+
+  // ✅ Prevents unnecessary re-fetching
+  const stableHandleSearch = useCallback(() => {
+    handleSearch();
+  }, [handleSearch]);
+
+  useEffect(() => {
+    if (debouncedQuery.length >= 3 || debouncedQuery.length === 0) {
+      stableHandleSearch();
+    }
+  }, [debouncedQuery, stableHandleSearch]);
 
   const filterOptions: Record<keyof Filters, string[]> = {
     cuisine: ["Italian", "Mexican", "Chinese", "Indian", "American"],
@@ -34,28 +49,24 @@ export default function Recipes() {
     maxReadyTime: ["15", "30", "60", "120"],
   };
 
-  const toggleFilter = (key: keyof Filters, option: string) => {
+  function toggleFilter(key: keyof Filters, option: string) {
     setFilters((prev) => ({
       ...prev,
       [key]: prev[key] === option ? "" : option,
     }));
-  };
+  }
 
-  const hasActiveFilters = Object.values(filters).some((val) => val);
+  const hasActiveFilters = Object.values(filters).some(Boolean);
 
   return (
-    <div className="mx-auto w-full min-wfull max-w-full h-full min-h-screen py-16 px-6 space-y-14">
-      {/* Header Section */}
-      <header>
-        <h1 className="text-4xl font-semibold text-gray-900 dark:text-white">
-          Discover & Save Recipes
-        </h1>
+    <div className="mx-auto w-full max-w-4xl min-h-screen py-16 px-6 space-y-14">
+      <header className="flex flex-col justify-self-center w-full">
+        <Title>Discover Recipes</Title>
         <p className="mt-2 text-lg text-gray-600 dark:text-gray-400">
           Plan your meals effortlessly with curated recipes.
         </p>
 
-        {/* Search & Filters Row */}
-        <div className="flex gap-2 justify-self-start mt-6">
+        <div className="flex gap-2  mt-6 relative items">
           <Input
             placeholder="Search for recipes..."
             value={query}
@@ -71,11 +82,10 @@ export default function Recipes() {
               <X className="w-4 h-4 text-gray-400" />
             </Button>
           )}
-          <Button onClick={handleSearch} size="icon">
+          <Button onClick={stableHandleSearch} size="icon" className="ml-2 p-2">
             <Search className="w-5 h-5" />
           </Button>
 
-          {/* Filters Dropdown */}
           <Popover open={isFilterOpen} onOpenChange={setIsFilterOpen}>
             <PopoverTrigger asChild>
               <Button
@@ -115,42 +125,63 @@ export default function Recipes() {
                 ))}
               </ScrollArea>
               <Separator className="my-3" />
-              <Button
-                variant="secondary"
-                onClick={resetFilters}
-                className="w-full"
-                disabled={!hasActiveFilters}
-              >
-                Reset Filters
-              </Button>
+              <div className="flex gap-2">
+                <Button
+                  variant="secondary"
+                  onClick={resetFilters}
+                  className="w-full"
+                  disabled={!hasActiveFilters && query === ""}
+                >
+                  Reset
+                </Button>
+                <Button
+                  onClick={() => {
+                    setIsFilterOpen(false);
+                    stableHandleSearch();
+                  }}
+                  className="w-full"
+                >
+                  Apply
+                </Button>
+              </div>
             </PopoverContent>
           </Popover>
         </div>
       </header>
 
-      {/* Recipes Section */}
-      <main className="flex-1 py-10 max-w-6xl mx-auto">
-        {loading ? (
+      <main className="flex-1 py-10 max-w-6xl mx-auto relative">
+        {loading && recipes.length === 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {Array.from({ length: 6 }).map((_, index) => (
-              <RecipeCardSkeleton key={index} />
+            {Array.from({ length: 6 }).map((_, i) => (
+              <RecipeCardSkeleton key={i} />
             ))}
           </div>
         ) : recipes.length > 0 ? (
-          <section>
-            <h2 className="text-xl font-medium text-gray-900 dark:text-white mb-4">
-              {query || hasActiveFilters ? "Filtered Results" : "Trending Now"}
-            </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {recipes.map((recipe) => (
-                <RecipeCard key={recipe.id} recipe={recipe} />
-              ))}
-            </div>
-          </section>
+          <>
+            {loading && recipes.length > 0 && (
+              <p className="text-sm text-gray-500 absolute top-0 right-0">
+                Loading new recipes...
+              </p>
+            )}
+            <section>
+              <Title className="text-3xl text-neutral-800 my-2">
+                {query || hasActiveFilters
+                  ? "Filtered Results"
+                  : "Trending Now"}
+              </Title>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {recipes.map((recipe) => (
+                  <RecipeCard key={recipe.id} recipe={recipe} />
+                ))}
+              </div>
+            </section>
+          </>
         ) : (
-          <p className="text-center text-lg mt-6 text-gray-500">
-            No Recipes Found
-          </p>
+          !loading && (
+            <p className="text-center text-lg mt-6 text-gray-500">
+              {error || "No Recipes Found"}
+            </p>
+          )
         )}
       </main>
     </div>

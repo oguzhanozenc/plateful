@@ -15,19 +15,29 @@ import { useState } from "react";
 import { LoggedMeal } from "@/types/types";
 import { LucideEdit, LucideTrash, LucidePlus } from "lucide-react";
 
+function getLocalYyyyMmDd(date: Date): string {
+  const tzOffset = date.getTimezoneOffset();
+  const localTime = new Date(date.getTime() - tzOffset * 60_000);
+  return localTime.toISOString().split("T")[0];
+}
+
 export default function PlannerCell({ date }: { date: Date | null }) {
   const { loggedMeals, addMeal, removeMeal, editMeal } =
     useMealPlannerContext();
   const [newMeal, setNewMeal] = useState("");
   const [editedMealName, setEditedMealName] = useState("");
 
-  if (!date) return <div className="border p-2 bg-gray-100 rounded-lg" />;
+  if (!date) {
+    return <div className="border p-2 bg-gray-100 rounded-lg" />;
+  }
 
-  const dateKey = date.toISOString().split("T")[0];
+  const dateKey = getLocalYyyyMmDd(date);
+
   const mealList: LoggedMeal[] = loggedMeals.filter(
     (meal) => meal.date === dateKey
   );
-  const isToday = date.toDateString() === new Date().toDateString();
+
+  const isToday = getLocalYyyyMmDd(date) === getLocalYyyyMmDd(new Date());
 
   return (
     <Dialog>
@@ -96,7 +106,13 @@ export default function PlannerCell({ date }: { date: Date | null }) {
                     <LucideTrash size={16} className="mr-1" /> Delete
                   </Button>
                   <DialogTrigger asChild>
-                    <Button onClick={() => editMeal(meal.id, editedMealName)}>
+                    <Button
+                      onClick={() => {
+                        if (editedMealName.trim()) {
+                          editMeal(meal.id, editedMealName.trim());
+                        }
+                      }}
+                    >
                       <LucideEdit size={16} className="mr-1" /> Save Changes
                     </Button>
                   </DialogTrigger>
@@ -119,7 +135,7 @@ export default function PlannerCell({ date }: { date: Date | null }) {
                   if (newMeal.trim()) {
                     addMeal({
                       id: `${dateKey}-${Date.now()}`,
-                      date: dateKey,
+                      date: dateKey, // local "YYYY-MM-DD"
                       name: newMeal.trim(),
                     });
                     setNewMeal("");

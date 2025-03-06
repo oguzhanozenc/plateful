@@ -6,6 +6,7 @@ import { Button } from "@/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import PlannerViewSelector from "@/app/components/planner/PlannerViewSelector";
 import PlannerCell from "@/app/components/planner/PlannerCell";
+import Title from "@/app/components/Title";
 
 export default function PlannerView() {
   const { currentDate, setCurrentDate, view, setView, getDays, changeDate } =
@@ -26,9 +27,7 @@ export default function PlannerView() {
   return (
     <div className="mx-auto w-full min-wfull max-w-full h-full min-h-screen py-16 px-6 space-y-14">
       <div className="border-b pb-3 mb-4 flex flex-wrap justify-center md:justify-between items-center">
-        <h1 className="text-2xl md:text-3xl font-semibold text-center">
-          Meal Planner
-        </h1>
+        <Title>Planner</Title>
         <div className="flex flex-wrap justify-center gap-2">
           <Button
             variant="ghost"

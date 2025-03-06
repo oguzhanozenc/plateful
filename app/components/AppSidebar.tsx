@@ -29,6 +29,8 @@ import {
 import Link from "next/link";
 import Image from "next/image";
 
+import Title from "@/app/components/Title";
+
 const menuItems = [
   { title: "Dashboard", route: "/", icon: LayoutDashboard },
   { title: "Food Inventory", route: "/inventory", icon: Box },
@@ -56,13 +58,17 @@ export function AppSidebar() {
                       href="/"
                       className="flex items-center text-black hover:text-black transition-colors"
                     >
-                      <Image
-                        src="/logo-black.png"
-                        width={24}
-                        height={24}
-                        alt="logo"
-                      />
-                      <span className="ml-2 font-semibold">Plateful</span>
+                      <div className="flex items-center justify-self-center gap-2">
+                        <Image
+                          src="/logo-black.png"
+                          width={20}
+                          height={20}
+                          alt="logo"
+                        />
+                        <Title className="text-xl text-neutral-800 mb-1">
+                          Plateful
+                        </Title>
+                      </div>
                     </Link>
                   </SidebarMenuButton>
                 </div>
