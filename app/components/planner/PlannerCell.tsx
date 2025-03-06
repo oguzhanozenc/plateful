@@ -25,7 +25,7 @@ export default function PlannerCell({ date }: { date: Date | null }) {
   const { loggedMeals, addMeal, removeMeal, editMeal } =
     useMealPlannerContext();
   const [newMeal, setNewMeal] = useState("");
-  const [editedMealName, setEditedMealName] = useState("");
+  const [editedMeal, setEditedMeal] = useState<LoggedMeal | null>(null);
 
   if (!date) {
     return <div className="border p-2 bg-gray-100 rounded-lg" />;
@@ -84,7 +84,10 @@ export default function PlannerCell({ date }: { date: Date | null }) {
           {mealList.map((meal) => (
             <Dialog key={meal.id}>
               <DialogTrigger asChild>
-                <button className="bg-gray-100 px-2 py-1 rounded-md text-xs text-left truncate w-full hover:bg-gray-200 transition">
+                <button
+                  className="bg-gray-100 px-2 py-1 rounded-md text-xs text-left truncate w-full hover:bg-gray-200 transition"
+                  onClick={() => setEditedMeal(meal)}
+                >
                   {meal.name}
                 </button>
               </DialogTrigger>
@@ -93,8 +96,12 @@ export default function PlannerCell({ date }: { date: Date | null }) {
                   <DialogTitle>Edit or Delete Meal</DialogTitle>
                 </DialogHeader>
                 <Input
-                  defaultValue={meal.name}
-                  onChange={(e) => setEditedMealName(e.target.value)}
+                  defaultValue={editedMeal?.name || ""}
+                  onChange={(e) =>
+                    setEditedMeal((prev) =>
+                      prev ? { ...prev, name: e.target.value } : null
+                    )
+                  }
                   placeholder="Edit meal name..."
                 />
                 <DialogFooter className="flex justify-between gap-2">
@@ -108,8 +115,8 @@ export default function PlannerCell({ date }: { date: Date | null }) {
                   <DialogTrigger asChild>
                     <Button
                       onClick={() => {
-                        if (editedMealName.trim()) {
-                          editMeal(meal.id, editedMealName.trim());
+                        if (editedMeal && editedMeal.name.trim()) {
+                          editMeal(editedMeal.id, editedMeal);
                         }
                       }}
                     >
@@ -135,7 +142,7 @@ export default function PlannerCell({ date }: { date: Date | null }) {
                   if (newMeal.trim()) {
                     addMeal({
                       id: `${dateKey}-${Date.now()}`,
-                      date: dateKey, // local "YYYY-MM-DD"
+                      date: dateKey,
                       name: newMeal.trim(),
                     });
                     setNewMeal("");
