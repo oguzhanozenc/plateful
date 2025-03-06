@@ -2,21 +2,22 @@
 
 import { useState, useCallback } from "react";
 
-export function useFetch<T extends unknown>() {
-  const [data, setData] = useState<T | null>(null);
+export function useFetch<T>() {
+  const [data, setData] = useState<T | undefined>(undefined);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | undefined>(undefined);
 
   const fetchData = useCallback(
     async (
       endpoint: string,
       method: "GET" | "POST" | "PUT" | "DELETE" = "GET",
-      body?: Record<string, any>
-    ) => {
-      if (typeof window === "undefined") return null;
+      body?: Record<string, unknown>
+    ): Promise<T> => {
+      if (typeof window === "undefined")
+        throw new Error("Window is undefined.");
 
       setLoading(true);
-      setError(null);
+      setError(undefined);
 
       try {
         const res = await fetch(`/api/${endpoint}`, {
@@ -31,18 +32,21 @@ export function useFetch<T extends unknown>() {
           throw new Error(`API Error: ${res.status} - ${errorText}`);
         }
 
-        const result = await res.json();
+        const result: T = await res.json();
 
         setData((prevData) =>
           JSON.stringify(prevData) !== JSON.stringify(result)
             ? result
             : prevData
         );
+
         return result;
-      } catch (err: any) {
-        setError(err.message || "Something went wrong. Please try again.");
-        setData(null);
-        throw err;
+      } catch (err: unknown) {
+        const errorMessage =
+          err instanceof Error ? err.message : "An unknown error occurred.";
+        setError(errorMessage);
+        setData(undefined);
+        throw new Error(errorMessage);
       } finally {
         setLoading(false);
       }

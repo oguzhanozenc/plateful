@@ -4,9 +4,9 @@ import { useState, useEffect, useRef } from "react";
 import type { Recipe } from "@/types/types";
 
 export function useRecipeDetails(recipeId?: string) {
-  const [recipe, setRecipe] = useState<Recipe | null>(null);
+  const [recipe, setRecipe] = useState<Recipe | undefined>(undefined);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | undefined>(undefined);
 
   // ✅ Cache recipe details
   const cacheRef = useRef<Record<string, Recipe | "__ERROR__">>({});
@@ -18,29 +18,31 @@ export function useRecipeDetails(recipeId?: string) {
       return;
     }
 
-    // ✅ Use cache if available
-    if (cacheRef.current[recipeId]) {
-      if (cacheRef.current[recipeId] === "__ERROR__") {
+    // ✅ Ensure recipeId is a valid string before accessing cache
+    const validRecipeId = recipeId ?? "";
+
+    if (cacheRef.current[validRecipeId]) {
+      if (cacheRef.current[validRecipeId] === "__ERROR__") {
         setError("Failed to fetch recipe (cached).");
         setLoading(false);
         return;
       }
-      setRecipe(cacheRef.current[recipeId] as Recipe);
+      setRecipe(cacheRef.current[validRecipeId] as Recipe);
       setLoading(false);
       return;
     }
 
     async function fetchRecipe() {
       try {
-        const res = await fetch(`/api/recipes/${recipeId}`);
+        const res = await fetch(`/api/recipes/${validRecipeId}`);
         if (!res.ok) throw new Error(`Failed to fetch recipe: ${res.status}`);
         const data: Recipe = await res.json();
 
-        cacheRef.current[recipeId] = data;
+        cacheRef.current[validRecipeId] = data;
         setRecipe(data);
-        setError(null);
+        setError(undefined);
       } catch (err: unknown) {
-        cacheRef.current[recipeId] = "__ERROR__";
+        cacheRef.current[validRecipeId] = "__ERROR__";
         setError(
           err instanceof Error ? err.message : "An unknown error occurred."
         );

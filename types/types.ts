@@ -8,9 +8,20 @@ export type Nutrition = {
   nutrients: Nutrient[];
 };
 
+export type InstructionStep = {
+  number: number;
+  step: string;
+};
+
+export type Instruction = {
+  name?: string;
+  steps: InstructionStep[];
+};
+
 export type Ingredient = {
   id: number;
   name: string;
+  original: string;
   quantity?: number;
   unit?: string;
 };
@@ -32,6 +43,8 @@ export type Recipe = {
   healthScore?: number;
   aggregateLikes?: number;
   nutrition?: Nutrition;
+  extendedIngredients?: Ingredient[];
+  analyzedInstructions?: Instruction[];
 };
 
 export type Filters = {

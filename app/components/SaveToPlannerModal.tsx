@@ -13,18 +13,18 @@ import {
 import { Button } from "@/ui/button";
 import { Bookmark } from "lucide-react";
 
+const MEAL_CATEGORIES = ["Breakfast", "Lunch", "Dinner", "Snack"] as const;
+
+type MealCategory = (typeof MEAL_CATEGORIES)[number];
+
 type SaveToPlannerModalProps = {
   recipeId: number;
   recipeTitle: string;
   trigger?: React.ReactNode;
 };
 
-// Local date helper
 function toLocalDateString(date: Date): string {
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const day = String(date.getDate()).padStart(2, "0");
-  return `${year}-${month}-${day}`;
+  return date.toISOString().split("T")[0];
 }
 
 export default function SaveToPlannerModal({
@@ -34,9 +34,7 @@ export default function SaveToPlannerModal({
 }: SaveToPlannerModalProps) {
   const { addMeal } = useMealPlannerContext();
   const [isPlannerOpen, setIsPlannerOpen] = useState(false);
-  const [mealCategory, setMealCategory] = useState<
-    "Breakfast" | "Lunch" | "Dinner" | "Snack"
-  >("Lunch");
+  const [mealCategory, setMealCategory] = useState<MealCategory>("Lunch");
   const [notes, setNotes] = useState("");
 
   const todayDate = useMemo(() => toLocalDateString(new Date()), []);
@@ -68,9 +66,8 @@ export default function SaveToPlannerModal({
               {daysOfWeek.map((day, index) => {
                 const date = new Date();
                 date.setDate(date.getDate() + index);
-                const localDateString = toLocalDateString(date);
                 return (
-                  <option key={day} value={localDateString}>
+                  <option key={day} value={toLocalDateString(date)}>
                     {day} ({date.toDateString()})
                   </option>
                 );
@@ -82,13 +79,14 @@ export default function SaveToPlannerModal({
             <span className="text-gray-700">Meal Category</span>
             <select
               value={mealCategory}
-              onChange={(e) => setMealCategory(e.target.value as any)}
+              onChange={(e) => setMealCategory(e.target.value as MealCategory)}
               className="w-full p-2 border rounded"
             >
-              <option>Breakfast</option>
-              <option>Lunch</option>
-              <option>Dinner</option>
-              <option>Snack</option>
+              {MEAL_CATEGORIES.map((category) => (
+                <option key={category} value={category}>
+                  {category}
+                </option>
+              ))}
             </select>
           </label>
 
