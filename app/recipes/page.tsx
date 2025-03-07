@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { useRecipes } from "@/hooks/useRecipes";
 import { useDebounce } from "@/hooks/useDebounce";
 import { Input } from "@/ui/input";
@@ -31,17 +31,14 @@ export default function RecipeList() {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const debouncedQuery = useDebounce(query, 300);
 
-  // ✅ Prevents unnecessary re-fetching
-  const stableHandleSearch = useCallback(() => {
-    handleSearch();
-  }, [handleSearch]);
-
+  // Prevent unnecessary API calls when the query is empty or too short
   useEffect(() => {
     if (debouncedQuery.length >= 3 || debouncedQuery.length === 0) {
-      stableHandleSearch();
+      handleSearch();
     }
-  }, [debouncedQuery, stableHandleSearch]);
+  }, [debouncedQuery, handleSearch]);
 
+  //  filter options
   const filterOptions: Record<keyof Filters, string[]> = {
     cuisine: ["Italian", "Mexican", "Chinese", "Indian", "American"],
     diet: ["Vegan", "Vegetarian", "Ketogenic", "Paleo", "Pescatarian"],
@@ -60,13 +57,15 @@ export default function RecipeList() {
 
   return (
     <div className="mx-auto w-full max-w-4xl min-h-screen py-16 px-6 space-y-14">
+      {/*  Page Header */}
       <header className="flex flex-col justify-self-center w-full">
         <Title>Discover Recipes</Title>
         <p className="mt-2 text-lg text-gray-600 dark:text-gray-400">
           Plan your meals effortlessly with curated recipes.
         </p>
 
-        <div className="flex gap-2  mt-6 relative items">
+        {/*  Search & Filter Controls */}
+        <div className="flex gap-2 mt-6 relative">
           <Input
             placeholder="Search for recipes..."
             value={query}
@@ -82,7 +81,7 @@ export default function RecipeList() {
               <X className="w-4 h-4 text-gray-400" />
             </Button>
           )}
-          <Button onClick={stableHandleSearch} size="icon" className="ml-2 p-2">
+          <Button onClick={handleSearch} size="icon" className="ml-2 p-2">
             <Search className="w-5 h-5" />
           </Button>
 
@@ -137,7 +136,7 @@ export default function RecipeList() {
                 <Button
                   onClick={() => {
                     setIsFilterOpen(false);
-                    stableHandleSearch();
+                    handleSearch();
                   }}
                   className="w-full"
                 >
@@ -149,6 +148,7 @@ export default function RecipeList() {
         </div>
       </header>
 
+      {/*  Recipe Results */}
       <main className="flex-1 py-10 max-w-6xl mx-auto relative">
         {loading && recipes.length === 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -157,29 +157,22 @@ export default function RecipeList() {
             ))}
           </div>
         ) : recipes.length > 0 ? (
-          <>
-            {loading && recipes.length > 0 && (
-              <p className="text-sm text-gray-500 absolute top-0 right-0">
-                Loading new recipes...
-              </p>
-            )}
-            <section>
-              <Title className="text-3xl text-neutral-800 my-2">
-                {query || hasActiveFilters
-                  ? "Filtered Results"
-                  : "Trending Now"}
-              </Title>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {recipes.map((recipe) => (
-                  <RecipeCard key={recipe.id} recipe={recipe} />
-                ))}
-              </div>
-            </section>
-          </>
+          <section>
+            <Title className="text-3xl text-neutral-800 my-2">
+              {query || hasActiveFilters ? "Filtered Results" : "Trending Now"}
+            </Title>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {recipes.map((recipe) => (
+                <RecipeCard key={recipe.id} recipe={recipe} />
+              ))}
+            </div>
+          </section>
         ) : (
           !loading && (
             <p className="text-center text-lg mt-6 text-gray-500">
-              {error || "No Recipes Found"}
+              {error
+                ? error
+                : "Please try again with different search parameters or filters."}
             </p>
           )
         )}

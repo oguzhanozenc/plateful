@@ -13,7 +13,7 @@ export default function RecipeDetails() {
   const params = useParams<{ id: string }>();
   const router = useRouter();
 
-  // ✅ Explicitly typing useRecipeDetails response
+  // Fetch recipe using optimized hook
   const {
     recipe,
     loading,
@@ -22,12 +22,25 @@ export default function RecipeDetails() {
     params?.id ?? ""
   );
 
+  // Loading state - Show skeleton UI while fetching
   if (loading) return <RecipeDetailsSkeleton />;
-  if (error || !recipe) {
+
+  if (error) {
     return (
-      <div className="mx-auto w-full max-w-4xl min-h-screen py-16 px-6 space-y-14 text-center">
-        <p className="text-red-500 text-lg font-medium">
-          {error ?? "Recipe not found."}
+      <div className="text-center mx-auto w-full max-w-4xl min-h-screen py-16 px-6 space-y-6">
+        <p className="text-red-500 text-lg font-medium">{error}</p>
+        <Button variant="secondary" onClick={() => router.back()}>
+          <ArrowLeft className="w-4 h-4 mr-2" /> Go Back
+        </Button>
+      </div>
+    );
+  }
+
+  if (!recipe) {
+    return (
+      <div className="text-center mx-auto w-full max-w-4xl min-h-screen py-16 px-6 space-y-6">
+        <p className="text-gray-500 text-lg">
+          Recipe not found. Please try again later.
         </p>
         <Button variant="secondary" onClick={() => router.back()}>
           <ArrowLeft className="w-4 h-4 mr-2" /> Go Back
@@ -38,6 +51,7 @@ export default function RecipeDetails() {
 
   return (
     <div className="mx-auto w-full max-w-4xl min-h-screen py-16 px-6 space-y-14">
+      {/*  Top Navigation */}
       <div className="flex justify-between items-center sticky top-0 bg-white p-4 border-b z-10">
         <Button variant="ghost" onClick={() => router.back()}>
           <ArrowLeft className="w-5 h-5 mr-2" /> Back
@@ -54,9 +68,10 @@ export default function RecipeDetails() {
         />
       </div>
 
+      {/* Recipe Image */}
       <div className="relative rounded-lg overflow-hidden">
         <Image
-          src={recipe.image}
+          src={recipe.image || "/placeholder-recipe.jpg"}
           alt={recipe.title}
           width={800}
           height={400}
@@ -66,9 +81,11 @@ export default function RecipeDetails() {
         <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
       </div>
 
+      {/*  Recipe Details */}
       <div className="mt-6 space-y-6">
         <h1 className="text-4xl font-bold text-gray-900">{recipe.title}</h1>
 
+        {/* Recipe Metadata */}
         <div className="flex flex-wrap gap-6 text-sm text-gray-700 font-medium">
           {recipe.readyInMinutes !== undefined && (
             <span className="px-3 py-1 bg-gray-200 rounded-full">
@@ -113,7 +130,7 @@ export default function RecipeDetails() {
           )}
         </section>
 
-        {/* Instructions Section */}
+        {/*  Instructions Section */}
         <section className="bg-white shadow-sm rounded-lg p-6">
           <h3 className="text-lg font-semibold mb-4 text-gray-900">
             Instructions

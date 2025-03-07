@@ -1,9 +1,9 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 const SPOONACULAR_API_URL = process.env.SPOONACULAR_API_URL!;
 const SPOONACULAR_API_KEY = process.env.SPOONACULAR_API_KEY!;
 
-export async function GET(req: Request) {
+export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
     const query = searchParams.get("query")?.trim() || "";
@@ -13,13 +13,20 @@ export async function GET(req: Request) {
     const intolerances = searchParams.get("intolerances") || "";
     const maxReadyTime = searchParams.get("maxReadyTime") || "";
 
-    let apiUrl = `${SPOONACULAR_API_URL}/recipes/complexSearch?apiKey=${SPOONACULAR_API_KEY}&number=${number}&sort=popularity&addRecipeInformation=true`;
+    // ✅ Construct API URL safely
+    const apiParams = new URLSearchParams({
+      apiKey: SPOONACULAR_API_KEY,
+      number,
+      sort: "popularity",
+      addRecipeInformation: "true",
+      ...(query && { query }),
+      ...(cuisine && { cuisine }),
+      ...(diet && { diet }),
+      ...(intolerances && { intolerances }),
+      ...(maxReadyTime && { maxReadyTime }),
+    });
 
-    if (query) apiUrl += `&query=${query}`;
-    if (cuisine) apiUrl += `&cuisine=${cuisine}`;
-    if (diet) apiUrl += `&diet=${diet}`;
-    if (intolerances) apiUrl += `&intolerances=${intolerances}`;
-    if (maxReadyTime) apiUrl += `&maxReadyTime=${maxReadyTime}`;
+    const apiUrl = `${SPOONACULAR_API_URL}/recipes/complexSearch?${apiParams.toString()}`;
 
     const res = await fetch(apiUrl, {
       next: { revalidate: 60 },
@@ -29,13 +36,19 @@ export async function GET(req: Request) {
     });
 
     if (!res.ok) {
-      throw new Error(`API request failed: ${res.status} - ${res.statusText}`);
+      if (res.status === 429) {
+        return NextResponse.json(
+          { error: "Rate limit exceeded. Please try again later." },
+          { status: 429 }
+        );
+      }
+      throw new Error(`API request failed: ${res.status}`);
     }
 
     const data = await res.json();
 
-    if (!data.results) {
-      throw new Error("Invalid API response: Missing `results` field.");
+    if (!data.results || !Array.isArray(data.results)) {
+      return NextResponse.json({ results: [], totalResults: 0 });
     }
 
     return NextResponse.json({
@@ -43,9 +56,10 @@ export async function GET(req: Request) {
       totalResults: data.totalResults ?? 0,
     });
   } catch (error) {
-    console.error("❌ [Recipes] API Error:", error);
+    console.error("❌ [Recipes] API Error:", (error as Error).message);
+
     return NextResponse.json(
-      { error: "Failed to fetch recipes" },
+      { error: (error as Error).message || "Failed to fetch recipes." },
       { status: 500 }
     );
   }

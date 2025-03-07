@@ -1,17 +1,15 @@
 "use client";
 
 import { useState, useCallback, useRef } from "react";
-import { useFetch } from "@/hooks/useFetch";
+import { getRecipes } from "@/lib/getRecipes";
 import type { Recipe, Filters } from "@/types/types";
 
 type FetchParams = {
   query?: string;
   filters?: Filters;
-  isPopular?: boolean;
 };
 
 export function useRecipes() {
-  const { fetchData, loading, error } = useFetch<{ results: Recipe[] }>();
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [query, setQuery] = useState("");
   const [filters, setFilters] = useState<Filters>({
@@ -20,64 +18,75 @@ export function useRecipes() {
     intolerances: "",
     maxReadyTime: "",
   });
-  const [localError, setLocalError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  // ✅ Cache for previously fetched results
-  const cacheRef = useRef<Record<string, Recipe[] | "__ERROR__">>({});
+  // ✅ Cache to prevent unnecessary re-fetching
+  const cacheRef = useRef<Record<string, Recipe[] | null>>({});
 
   const fetchRecipes = useCallback(
-    async ({ query = "", filters, isPopular = false }: FetchParams) => {
-      let endpoint = "recipes";
+    async ({ query = "", filters = {} as Filters }: FetchParams) => {
+      setLoading(true);
+      setError(null);
 
-      if (isPopular) {
-        endpoint = "recipes?number=10";
-      } else {
-        const params = new URLSearchParams();
-        if (query) params.append("query", query);
-        if (filters?.cuisine) params.append("cuisine", filters.cuisine);
-        if (filters?.diet) params.append("diet", filters.diet);
-        if (filters?.intolerances)
-          params.append("intolerances", filters.intolerances);
-        if (filters?.maxReadyTime)
-          params.append("maxReadyTime", filters.maxReadyTime);
-        params.append("number", "10");
-        params.append("addRecipeInformation", "true");
+      const params: Record<string, string> = { number: "10" };
+      if (query) params.query = query;
+      if (filters.cuisine) params.cuisine = filters.cuisine;
+      if (filters.diet) params.diet = filters.diet;
+      if (filters.intolerances) params.intolerances = filters.intolerances;
+      if (filters.maxReadyTime) params.maxReadyTime = filters.maxReadyTime;
 
-        endpoint = `recipes?${params.toString()}`;
-      }
+      const cacheKey = JSON.stringify(params);
 
-      // ✅ Use cache if data was already fetched
-      if (cacheRef.current[endpoint]) {
-        const cached = cacheRef.current[endpoint];
-        if (cached === "__ERROR__") {
-          setRecipes([]);
-          setLocalError("No recipes found or server error (cached).");
-          return;
-        }
-        setRecipes(cached as Recipe[]);
-        setLocalError(null);
+      // ✅ Fetch fresh results when query/filters change
+      if (cacheRef.current[cacheKey] !== undefined) {
+        console.log("♻️ Using cached data.");
+        setRecipes(cacheRef.current[cacheKey] || []);
+        setLoading(false);
         return;
       }
 
-      try {
-        const data = await fetchData(endpoint);
+      console.log("🔍 Fetching fresh results from API...");
+      let retries = 2;
 
-        if (Array.isArray(data.results)) {
-          setRecipes(data.results);
-          cacheRef.current[endpoint] = data.results;
-          setLocalError(null);
-        } else {
-          setRecipes([]);
-          cacheRef.current[endpoint] = "__ERROR__";
-          setLocalError("No recipes found or server error.");
+      while (retries > 0) {
+        try {
+          const data = await getRecipes(params);
+
+          if (!Array.isArray(data)) {
+            throw new Error("Invalid API response.");
+          }
+
+          if (data.length === 0) {
+            setRecipes([]);
+            cacheRef.current[cacheKey] = [];
+            setError(null);
+            break;
+          }
+
+          setRecipes(data);
+          cacheRef.current[cacheKey] = data;
+          setError(null);
+          return;
+        } catch (err) {
+          retries--;
+
+          // Handle API rate limit (429 error)
+          if (err instanceof Error && err.message.includes("429")) {
+            setError("API rate limit exceeded. Please try again later.");
+            break;
+          }
+
+          // If out of retries, mark failure (without caching permanent errors)
+          if (retries === 0) {
+            setRecipes([]);
+            setError("Failed to fetch recipes. Please try again later.");
+          }
         }
-      } catch {
-        setRecipes([]);
-        cacheRef.current[endpoint] = "__ERROR__";
-        setLocalError("Failed to fetch recipes: API limit or server error.");
       }
+      setLoading(false);
     },
-    [fetchData]
+    []
   );
 
   const handleSearch = useCallback(() => {
@@ -99,6 +108,6 @@ export function useRecipes() {
     handleSearch,
     resetFilters,
     loading,
-    error: error || localError,
+    error,
   };
 }

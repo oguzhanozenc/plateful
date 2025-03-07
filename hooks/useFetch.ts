@@ -10,11 +10,25 @@ export function useFetch<T>() {
   const fetchData = useCallback(
     async (
       endpoint: string,
-      method: "GET" | "POST" | "PUT" | "DELETE" = "GET",
+      method: "GET" | "POST" = "GET",
       body?: Record<string, unknown>
     ): Promise<T> => {
-      if (typeof window === "undefined")
-        throw new Error("Window is undefined.");
+      const ALLOWED_METHODS = ["GET", "POST"];
+      const ALLOWED_API_ENDPOINTS = ["recipes", "ingredients", "nutrition"];
+
+      if (!ALLOWED_METHODS.includes(method)) {
+        throw new Error(
+          `Invalid request method: ${method}. Only GET and POST are allowed.`
+        );
+      }
+
+      if (
+        !ALLOWED_API_ENDPOINTS.some((allowed) => endpoint.startsWith(allowed))
+      ) {
+        throw new Error(
+          `Invalid API request: The endpoint '${endpoint}' is not allowed.`
+        );
+      }
 
       setLoading(true);
       setError(undefined);
@@ -33,13 +47,7 @@ export function useFetch<T>() {
         }
 
         const result: T = await res.json();
-
-        setData((prevData) =>
-          JSON.stringify(prevData) !== JSON.stringify(result)
-            ? result
-            : prevData
-        );
-
+        setData(result);
         return result;
       } catch (err: unknown) {
         const errorMessage =
