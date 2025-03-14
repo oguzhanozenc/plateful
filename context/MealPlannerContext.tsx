@@ -20,6 +20,8 @@ type MealPlannerContextProps = {
   setMealCategory: (category: MealCategory) => void;
   notes: string;
   setNotes: (notes: string) => void;
+  recipeTitle: string;
+  setRecipeTitle: (title: string) => void;
   handleSaveOrEditMeal: (
     recipeTitle: string,
     fullRecipe: string,
@@ -35,17 +37,19 @@ const MealPlannerContext = createContext<MealPlannerContextProps | undefined>(
 );
 
 export function MealPlannerProvider({ children }: { children: ReactNode }) {
-  //  Meal Data
+  // Meal Data
   const [loggedMeals, setLoggedMeals] = useState<LoggedMeal[]>([]);
   const [plannedMeals, setPlannedMeals] = useState<PlannedDayMeals[]>([]);
 
-  //  UI State
+  // UI State
   const [selectedMeal, setSelectedMeal] = useState<LoggedMeal | null>(null);
   const [selectedDay, setSelectedDay] = useState(
     new Date().toISOString().split("T")[0]
   );
   const [mealCategory, setMealCategory] = useState<MealCategory>("Lunch");
   const [notes, setNotes] = useState<string>("");
+
+  const [recipeTitle, setRecipeTitle] = useState<string>("");
 
   /** Helper function to show toast messages */
   const showToast = (message: string) => {
@@ -162,6 +166,8 @@ export function MealPlannerProvider({ children }: { children: ReactNode }) {
         setMealCategory,
         notes,
         setNotes,
+        recipeTitle,
+        setRecipeTitle,
         handleSaveOrEditMeal,
         removeMeal,
       }}
