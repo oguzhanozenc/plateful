@@ -49,9 +49,27 @@ export async function POST(req: Request) {
         ],
       });
 
-      recipe =
-        claudeResponse?.content?.[0]?.text?.trim() ||
-        "⚠️ No valid response from Claude.";
+      console.log("Claude Response:", JSON.stringify(claudeResponse, null, 2));
+
+      if (Array.isArray(claudeResponse?.content)) {
+        recipe = claudeResponse.content
+          .map((block) => {
+            if (typeof block === "string") return block;
+            if (
+              block &&
+              typeof block === "object" &&
+              "text" in block &&
+              typeof block.text === "string"
+            ) {
+              return block.text;
+            }
+            return "";
+          })
+          .join("\n")
+          .trim();
+      } else {
+        recipe = "⚠️ No valid response from Claude.";
+      }
     } else {
       const mistralResponse = await hf.chatCompletion({
         model: "mistralai/Mixtral-8x7B-Instruct-v0.1",
@@ -64,6 +82,11 @@ export async function POST(req: Request) {
         ],
         max_tokens: 1024,
       });
+
+      console.log(
+        "Mistral Response:",
+        JSON.stringify(mistralResponse, null, 2)
+      );
 
       recipe =
         mistralResponse?.choices?.[0]?.message?.content?.trim() ||
