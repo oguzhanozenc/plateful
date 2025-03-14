@@ -56,7 +56,7 @@ export default function RecipeList() {
   const hasActiveFilters = Object.values(filters).some(Boolean);
 
   return (
-    <div className="mx-auto w-full max-w-4xl min-h-screen py-16 px-6 space-y-14">
+    <div className="mx-auto w-full max-w-screen-lg px-4 sm:px-6 py-6 sm:py-8 md:py-16 space-y-6 sm:space-y-10 md:space-y-14 min-h-screen">
       {/*  Page Header */}
       <header className="flex flex-col justify-self-center w-full">
         <Title>Discover Recipes</Title>
@@ -65,19 +65,14 @@ export default function RecipeList() {
         </p>
 
         {/*  Search & Filter Controls */}
-        <div className="flex gap-2 mt-6 relative">
+        <div className="flex gap-2 mt-6  max-sm:flex-wrap max-sm:justify-center">
           <Input
             placeholder="Search for recipes..."
             value={query}
             onChange={(e) => setQuery(e.target.value)}
           />
           {query && (
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setQuery("")}
-              className="absolute right-14 top-1/2 -translate-y-1/2"
-            >
+            <Button variant="ghost" size="icon" onClick={() => setQuery("")}>
               <X className="w-4 h-4 text-gray-400" />
             </Button>
           )}
@@ -149,19 +144,19 @@ export default function RecipeList() {
       </header>
 
       {/*  Recipe Results */}
-      <main className="flex-1 py-10 max-w-6xl mx-auto relative">
+      <main className="flex flex-col justify-between gap-5 py-10 max-w-6xl mx-auto">
         {loading && recipes.length === 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 justify-between items-stretch">
             {Array.from({ length: 6 }).map((_, i) => (
               <RecipeCardSkeleton key={i} />
             ))}
           </div>
         ) : recipes.length > 0 ? (
-          <section>
-            <Title className="text-3xl text-neutral-800 my-2">
+          <section className="flex flex-col gap-6">
+            <Title size="sm">
               {query || hasActiveFilters ? "Filtered Results" : "Trending Now"}
             </Title>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 justify-between items-stretch">
               {recipes.map((recipe) => (
                 <RecipeCard key={recipe.id} recipe={recipe} />
               ))}

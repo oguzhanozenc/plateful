@@ -20,19 +20,23 @@ export default function FeatureCard({
   buttonText,
 }: FeatureCardProps) {
   return (
-    <Card className="flex border border-neutral-200 bg-white shadow-md hover:shadow-lg transition-shadow duration-500 ease-out rounded-lg p-6 flex flex-col gap-4">
-      <div className="flex items-start gap-4">
-        <div className="text-3xl">{icon}</div>
-        <div className="flex-1">
-          <CardTitle className="text-neutral-900 text-lg font-semibold leading-tight">
-            {title}
-          </CardTitle>
-          <p className="text-neutral-700 text-sm leading-snug">{description}</p>
+    <Card className="flex border border rounded-xl border-neutral-200 bg-white/80 backdrop-blur-xl shadow-md hover:shadow-lg transition-shadow duration-500 ease-out py-6 px-4 flex flex-col gap-2">
+      <div className="flex items-start gap-2">
+        <div className="text-4xl">{icon}</div>
+        <div className="flex items-start gap-2">
+          <div className="flex-1">
+            <CardTitle className="text-neutral-900 text-lg font-semibold leading-[1.3]">
+              {title}
+            </CardTitle>
+            <p className="text-neutral-500 text-[13px] leading-snug mt-1">
+              {description}
+            </p>
+          </div>
         </div>
       </div>
       <div className="flex justify-end mt-auto">
         <Link href={link} passHref>
-          <Button className="px-5 py-2.5 text-sm font-medium bg-neutral-700 hover:bg-neutral-800 border border-neutral-600 text-white rounded-lg transition-all">
+          <Button variant="secondary" className="border border-neutral">
             {buttonText}
           </Button>
         </Link>

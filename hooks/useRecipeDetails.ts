@@ -1,5 +1,3 @@
-"use client";
-
 import { useState, useEffect, useRef } from "react";
 import { getRecipeById } from "@/lib/getRecipes";
 import type { Recipe } from "@/types/types";
@@ -9,11 +7,17 @@ export function useRecipeDetails(recipeId?: string) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | undefined>(undefined);
 
-  // ✅ Cache to prevent unnecessary re-fetching
   const cacheRef = useRef<Record<string, Recipe | "__ERROR__">>({});
 
   useEffect(() => {
-    if (!recipeId || isNaN(Number(recipeId))) {
+    //  Handle cases where recipeId is temporarily undefined
+    if (!recipeId) {
+      setLoading(true); // Show loading state instead of error
+      return;
+    }
+
+    // Ensure recipeId is a valid number
+    if (isNaN(Number(recipeId))) {
       setError("Invalid recipe ID.");
       setLoading(false);
       return;
@@ -21,7 +25,7 @@ export function useRecipeDetails(recipeId?: string) {
 
     const validRecipeId = recipeId.trim();
 
-    // ✅ Check Cache First
+    //  Check Cache First
     if (cacheRef.current[validRecipeId]) {
       if (cacheRef.current[validRecipeId] === "__ERROR__") {
         setError("Failed to fetch recipe (cached).");

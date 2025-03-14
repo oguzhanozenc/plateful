@@ -1,21 +1,25 @@
 "use client";
 
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Button } from "@/ui/button";
 import { Card, CardTitle } from "@/ui/card";
 import { LoggedMeal } from "@/types/types";
 
 type RecentActivityCardProps = {
   displayDate: string;
+  fullDate: string;
   meals: LoggedMeal[];
 };
 
 export default function RecentActivityCard({
   displayDate,
+  fullDate,
   meals,
 }: RecentActivityCardProps) {
+  const router = useRouter();
+
   return (
-    <Card className="flex border border-neutral-300 bg-white shadow-lg hover:shadow-xl transition-shadow duration-500 ease-[cubic-bezier(0.25,0.8,0.25,1)] rounded-lg p-6 flex flex-col">
+    <Card className="flex border border-neutral-300 bg-white shadow-lg hover:shadow-xl transition-shadow duration-500 ease-in-out rounded-lg p-6 flex flex-col">
       <CardTitle className="text-sm font-semibold text-neutral-800">
         {displayDate}
       </CardTitle>
@@ -23,7 +27,7 @@ export default function RecentActivityCard({
         {meals.length > 0 ? (
           meals.map((meal) => (
             <div key={meal.id} className="flex items-center gap-2">
-              🍽 {meal.name}
+              🍽 {meal.title}
             </div>
           ))
         ) : (
@@ -31,11 +35,19 @@ export default function RecentActivityCard({
         )}
       </div>
       <div className="mt-3 flex justify-end">
-        <Link href="/planner" passHref>
-          <Button className="px-5 py-2.5 text-sm font-medium bg-neutral-200 hover:bg-neutral-300 border border-neutral-400 text-neutral-800 rounded-lg">
-            View
-          </Button>
-        </Link>
+        <Button
+          variant="outline"
+          className="transition-colors duration-300 ease-in-out"
+          onClick={() => {
+            if (!fullDate) {
+              console.error("Error: fullDate is undefined");
+              return;
+            }
+            router.push(`/planner/${fullDate}`);
+          }}
+        >
+          View
+        </Button>
       </div>
     </Card>
   );

@@ -1,121 +1,70 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState } from "react";
+import { useGenerateRecipe } from "@/context/GenerateRecipeContext";
+import { useFetchedRecipe } from "@/context/FetchedRecipeContext";
 import { useMealPlannerContext } from "@/context/MealPlannerContext";
-import { daysOfWeek } from "@/types/types";
 import {
   Dialog,
   DialogTrigger,
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogFooter,
 } from "@/ui/dialog";
 import { Button } from "@/ui/button";
 import { Bookmark } from "lucide-react";
+import PlannerMealForm from "@/app/components/PlannerMealForm";
+import RecipePreview from "@/app/components/RecipePreview";
 
-const MEAL_CATEGORIES = ["Breakfast", "Lunch", "Dinner", "Snack"] as const;
+export default function SaveToPlannerModal() {
+  const { recipe: fetchedRecipe } = useFetchedRecipe();
+  const { recipe: aiRecipe } = useGenerateRecipe();
+  const { handleSaveOrEditMeal, selectedDay, mealCategory } =
+    useMealPlannerContext();
 
-type MealCategory = (typeof MEAL_CATEGORIES)[number];
+  const recipeToSave = fetchedRecipe || aiRecipe;
+  const defaultTitle = fetchedRecipe?.title || "AI-Generated Recipe";
 
-type SaveToPlannerModalProps = {
-  recipeId: number;
-  recipeTitle: string;
-  trigger?: React.ReactNode;
-};
+  const [localRecipeTitle, setLocalRecipeTitle] = useState(defaultTitle);
 
-function toLocalDateString(date: Date): string {
-  return date.toISOString().split("T")[0];
-}
-
-export default function SaveToPlannerModal({
-  recipeId,
-  recipeTitle,
-  trigger,
-}: SaveToPlannerModalProps) {
-  const { addMeal } = useMealPlannerContext();
-  const [isPlannerOpen, setIsPlannerOpen] = useState(false);
-  const [mealCategory, setMealCategory] = useState<MealCategory>("Lunch");
-  const [notes, setNotes] = useState("");
-
-  const todayDate = useMemo(() => toLocalDateString(new Date()), []);
-  const [selectedDay, setSelectedDay] = useState<string>(todayDate);
+  const handleSave = () => {
+    if (!selectedDay || !recipeToSave) return;
+    handleSaveOrEditMeal(
+      localRecipeTitle.trim(),
+      typeof recipeToSave === "string" ? recipeToSave : recipeToSave.title,
+      mealCategory,
+      selectedDay
+    );
+  };
 
   return (
-    <Dialog open={isPlannerOpen} onOpenChange={setIsPlannerOpen}>
+    <Dialog>
       <DialogTrigger asChild>
-        {trigger ?? (
-          <Button variant="secondary">
-            <Bookmark className="w-4 h-4 mr-2" /> Save to Planner
-          </Button>
-        )}
+        <Button variant="outline">
+          <Bookmark className="w-4 h-4 mr-2" /> Save to Planner
+        </Button>
       </DialogTrigger>
 
-      <DialogContent>
+      <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Save Meal to Planner</DialogTitle>
         </DialogHeader>
-
-        <div className="space-y-4">
-          <label className="block">
-            <span className="text-gray-700">Select Day</span>
-            <select
-              value={selectedDay}
-              onChange={(e) => setSelectedDay(e.target.value)}
-              className="w-full p-2 border rounded"
+        <PlannerMealForm
+          localRecipeTitle={localRecipeTitle}
+          setLocalRecipeTitle={setLocalRecipeTitle}
+        />
+        <RecipePreview />
+        <DialogFooter>
+          <DialogTrigger asChild>
+            <Button
+              onClick={handleSave}
+              disabled={!selectedDay || !recipeToSave}
             >
-              {daysOfWeek.map((day, index) => {
-                const date = new Date();
-                date.setDate(date.getDate() + index);
-                return (
-                  <option key={day} value={toLocalDateString(date)}>
-                    {day} ({date.toDateString()})
-                  </option>
-                );
-              })}
-            </select>
-          </label>
-
-          <label className="block">
-            <span className="text-gray-700">Meal Category</span>
-            <select
-              value={mealCategory}
-              onChange={(e) => setMealCategory(e.target.value as MealCategory)}
-              className="w-full p-2 border rounded"
-            >
-              {MEAL_CATEGORIES.map((category) => (
-                <option key={category} value={category}>
-                  {category}
-                </option>
-              ))}
-            </select>
-          </label>
-
-          <label className="block">
-            <span className="text-gray-700">Notes</span>
-            <textarea
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
-              className="w-full p-2 border rounded"
-              placeholder="Optional notes..."
-            />
-          </label>
-
-          <Button
-            onClick={() => {
-              addMeal({
-                id: crypto.randomUUID(),
-                date: selectedDay,
-                category: mealCategory,
-                recipeId,
-                name: recipeTitle,
-                notes,
-              });
-              setIsPlannerOpen(false);
-            }}
-          >
-            Save to Planner
-          </Button>
-        </div>
+              Save to Planner
+            </Button>
+          </DialogTrigger>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );

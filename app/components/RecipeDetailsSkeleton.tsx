@@ -7,7 +7,7 @@ export function RecipeDetailsSkeleton() {
   return (
     <div className="max-w-3xl mx-auto py-12 px-6 animate-pulse">
       {/* Top Action Bar */}
-      <div className="flex justify-between items-center sticky top-0 bg-background p-4 shadow-md rounded-lg z-10">
+      <div className="flex justify-between items-center sticky top-0 bg-background p-4 rounded-lg z-10">
         <Skeleton className="h-10 w-24 bg-secondary" />
         <Skeleton className="h-10 w-32 bg-secondary" />
       </div>

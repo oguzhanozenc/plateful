@@ -1,130 +1,100 @@
 "use client";
 
-import { useState } from "react";
-
+import { useState, useMemo } from "react";
 import { Button } from "@/ui/button";
-import PlannerView from "@/app/planner/page";
 import { useMealPlannerContext } from "@/context/MealPlannerContext";
-import { Sparkles } from "lucide-react";
-import {
-  Dialog,
-  DialogTrigger,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/ui/dialog";
+import { useDateContext } from "@/context/DateContext";
 
 import Title from "@/app/components/Title";
 import FeatureCard from "@/app/components/FeatureCard";
 import RecentActivityCard from "@/app/components/RecentActivityCard";
+import GenerateRecipeModal from "@/app/components/GenerateRecipeModal";
 
-function getLocalYyyyMmDd(date: Date): string {
-  const tzOffset = date.getTimezoneOffset();
-  const localTime = new Date(date.getTime() - tzOffset * 60_000);
-  return localTime.toISOString().split("T")[0]; // Örn: "2025-03-07"
-}
-
-function getCurrentWeekDates() {
-  const today = new Date();
-
-  const startOfWeek = new Date(today);
-  startOfWeek.setDate(today.getDate() - ((today.getDay() + 6) % 7));
-
-  return Array.from({ length: 7 }, (_, i) => {
-    const date = new Date(startOfWeek);
-    date.setDate(date.getDate() + i);
-
-    return {
-      fullDate: getLocalYyyyMmDd(date),
-      formattedDate: date.toLocaleDateString("en-US", {
-        month: "short",
-        day: "numeric",
-      }),
-    };
-  });
-}
-
-export default function Home() {
-  const [isPlannerOpen, setIsPlannerOpen] = useState(false);
+export default function Dashboard() {
   const [showAll, setShowAll] = useState(false);
 
-  const weekDates = getCurrentWeekDates();
+  const { loggedMeals = [] } = useMealPlannerContext();
+  const { getCurrentWeekDates } = useDateContext();
 
-  const { loggedMeals } = useMealPlannerContext();
-
-  const recentDays = weekDates.map((day) => ({
-    ...day,
-    meals: loggedMeals.filter((meal) => meal.date === day.fullDate),
-  }));
+  const recentDays = useMemo(
+    () =>
+      getCurrentWeekDates().map((day) => ({
+        ...day,
+        meals: loggedMeals.filter((meal) => meal.date === day.fullDate),
+      })),
+    [loggedMeals, getCurrentWeekDates]
+  );
 
   return (
-    <div className="mx-auto w-full min-wfull max-w-full h-full min-h-screen py-16 px-6 space-y-14">
-      <div className="flex md:flex-row justify-between items-center mb-10 gap-4">
+    <div className="mx-auto w-full max-w-screen-lg px-4 sm:px-6 py-6 sm:py-8 md:py-16 space-y-6 sm:space-y-10 md:space-y-14 min-h-screen">
+      {/*  Header Section */}
+      <header className="flex md:flex-row justify-between md:items-center mb-10 gap-4 items-center">
         <Title>Dashboard</Title>
+        <GenerateRecipeModal />
+      </header>
 
-        <Dialog open={isPlannerOpen} onOpenChange={setIsPlannerOpen}>
-          <DialogTrigger asChild>
-            <Button className="flex items-center gap-2 px-6 py-3 text-sm font-medium bg-black hover:bg-neutral-950 text-white rounded-lg shadow-lg">
-              <Sparkles size={16} />
-              Generate Recipe
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="max-w-4xl w-full">
-            <DialogHeader>
-              <DialogTitle>Meal Planner</DialogTitle>
-            </DialogHeader>
-            <div className="flex max-w-screen max-h-screen overflow-y-auto">
-              <PlannerView />
-            </div>
-          </DialogContent>
-        </Dialog>
-      </div>
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 px-4">
+      {/* Feature Section */}
+      <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {FEATURE_CARDS.map((card) => (
           <FeatureCard key={card.title} {...card} />
         ))}
-      </div>
+      </section>
 
-      <Title className="text-2xl text-neutral-800 mb-1">Recent Activity</Title>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 px-4">
-        {(showAll ? recentDays : recentDays.slice(0, 3)).map(
-          ({ fullDate, formattedDate, meals }) => (
-            <RecentActivityCard
-              key={fullDate}
-              displayDate={formattedDate}
-              meals={meals}
-            />
-          )
+      {/*  Recent Activity Section */}
+      <section className="flex flex-col gap-6">
+        <Title size="sm">Recent Activity</Title>
+
+        {recentDays.length > 0 ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {(showAll ? recentDays : recentDays.slice(0, 3)).map(
+              ({ fullDate, formattedDate, meals }) => (
+                <RecentActivityCard
+                  key={fullDate}
+                  displayDate={formattedDate}
+                  fullDate={fullDate}
+                  meals={meals}
+                />
+              )
+            )}
+          </div>
+        ) : (
+          <p className="text-gray-500">No recent activity recorded.</p>
         )}
-      </div>
 
-      {recentDays.length > 3 && (
-        <div className="flex justify-center mt-4">
-          <Button
-            variant="outline"
-            onClick={() => setShowAll((prev) => !prev)}
-            className="text-sm"
-          >
-            {showAll ? "Show Less" : "Show More"}
-          </Button>
-        </div>
-      )}
+        {/* Show More / Show Less Button */}
+        {recentDays.length > 3 && (
+          <div className="flex justify-center mt-4 pb-4">
+            <Button
+              variant="outline"
+              onClick={() => setShowAll((prev) => !prev)}
+              className="text-sm"
+              aria-label={
+                showAll
+                  ? "Show less recent activity"
+                  : "Show more recent activity"
+              }
+            >
+              {showAll ? "Show Less" : "Show More"}
+            </Button>
+          </div>
+        )}
+      </section>
     </div>
   );
 }
 
+/* 📌 Feature Cards */
 const FEATURE_CARDS = [
   {
-    title: "Manage Inventory",
-    description: "Track and organize ingredients effortlessly.",
-    icon: "📦",
-    link: "/inventory",
-    buttonText: "Manage",
+    title: "Recipe Library",
+    description: "Discover new recipes to try out for your next meal.",
+    icon: "📚",
+    link: "/recipes",
+    buttonText: "Explore",
   },
   {
     title: "Generate Recipes",
-    description: "Get meal ideas based on your available items.",
+    description: "Get meal ideas based on your available ingredients.",
     icon: "🥗",
     link: "/generate-recipe",
     buttonText: "Generate",

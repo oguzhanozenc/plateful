@@ -1,3 +1,4 @@
+// ====== Nutrition & Ingredients ======
 export type Nutrient = {
   name: string;
   amount: number;
@@ -8,6 +9,15 @@ export type Nutrition = {
   nutrients: Nutrient[];
 };
 
+export type Ingredient = {
+  id: number;
+  name: string;
+  original: string;
+  quantity?: number;
+  unit?: string;
+};
+
+// ====== Recipes & Cooking Instructions ======
 export type InstructionStep = {
   number: number;
   step: string;
@@ -18,18 +28,10 @@ export type Instruction = {
   steps: InstructionStep[];
 };
 
-export type Ingredient = {
-  id: number;
-  name: string;
-  original: string;
-  quantity?: number;
-  unit?: string;
-};
-
 export type Recipe = {
   id: number;
-  description?: string;
   title: string;
+  description?: string;
   image: string;
   readyInMinutes?: number;
   servings?: number;
@@ -47,6 +49,7 @@ export type Recipe = {
   analyzedInstructions?: Instruction[];
 };
 
+// ====== Filtering & Preferences ======
 export type Filters = {
   cuisine: string;
   diet: string;
@@ -54,24 +57,47 @@ export type Filters = {
   maxReadyTime: string;
 };
 
-export type PlannedDayMeals = {
-  day: string;
-  meals: {
-    category: "Breakfast" | "Lunch" | "Dinner" | "Snack";
-    recipeId: number;
-    name?: string;
-    notes?: string;
-  }[];
-};
+// ====== Meal Planning & Logs ======
+export type MealCategory = "Breakfast" | "Lunch" | "Dinner" | "Snack";
 
 export type LoggedMeal = {
   id: string;
   date: string;
-  category?: "Breakfast" | "Lunch" | "Dinner" | "Snack";
-  recipeId?: number;
-  name: string;
+  category: MealCategory;
+  title: string;
+  fullRecipe: string;
+  recipeId?: string;
   notes?: string;
 };
+
+export type PlannedMeal = {
+  category: MealCategory;
+  recipeId: string | null;
+  title?: string;
+  notes?: string;
+  fullRecipe?: string;
+};
+
+export type PlannedDayMeals = {
+  day: string;
+  meals: PlannedMeal[];
+};
+
+// ====== Inventory & Categories ======
+export type CategoryOptions =
+  | "Vegetable"
+  | "Protein"
+  | "Dairy"
+  | "Grain"
+  | "Other";
+
+export const CATEGORY_OPTIONS: ReadonlyArray<CategoryOptions> = [
+  "Vegetable",
+  "Protein",
+  "Dairy",
+  "Grain",
+  "Other",
+] as const;
 
 export type InventoryItem = {
   id: string;
@@ -80,6 +106,7 @@ export type InventoryItem = {
   quantity?: number;
 };
 
+// ====== App-Wide State ======
 export type AppState = {
   inventory: InventoryItem[];
   planner: PlannedDayMeals[];
@@ -87,7 +114,8 @@ export type AppState = {
   loggedMeals: LoggedMeal[];
 };
 
-export const daysOfWeek = [
+// ====== Planner ======
+export const daysOfWeek: ReadonlyArray<string> = [
   "Monday",
   "Tuesday",
   "Wednesday",
@@ -97,17 +125,28 @@ export const daysOfWeek = [
   "Sunday",
 ] as const;
 
-export type CategoryOptions =
-  | "Vegetable"
-  | "Protein"
-  | "Dairy"
-  | "Grain"
-  | "Other";
+// ====== Inventory Component Props ======
+export type InventoryItemProps = {
+  item: InventoryItem;
+  editingItem?: InventoryItem;
+  handleEditItem: (item: InventoryItem) => void;
+  removeItemFromInventory: (id: string) => void;
+  setShowAddItem: (value: boolean) => void;
+};
 
-export const CATEGORY_OPTIONS: Readonly<CategoryOptions[]> = [
-  "Vegetable",
-  "Protein",
-  "Dairy",
-  "Grain",
-  "Other",
-];
+export type InventoryFormProps = {
+  newItemName: string;
+  setNewItemName: (value: string) => void;
+  newItemCategory: CategoryOptions;
+  setNewItemCategory: (value: CategoryOptions) => void;
+  handleAddOrEditItem: () => void;
+  editingItem?: InventoryItem;
+};
+
+export type InventoryListProps = {
+  inventory: InventoryItem[];
+  editingItem?: InventoryItem;
+  handleEditItem: (item: InventoryItem) => void;
+  removeItemFromInventory: (id: string) => void;
+  setShowAddItem: (value: boolean) => void;
+};

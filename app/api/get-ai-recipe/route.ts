@@ -1,49 +1,84 @@
 import { HfInference } from "@huggingface/inference";
+import Anthropic from "@anthropic-ai/sdk";
 import { NextResponse } from "next/server";
-import "server-only"; // ✅ Enforce server execution for security
+import "server-only";
 
-const hf = new HfInference(process.env.HF_ACCESS_TOKEN);
+const hfAccessToken = process.env.HF_ACCESS_TOKEN;
+const anthropicApiKey = process.env.ANTHROPIC_API_KEY;
+
+if (!hfAccessToken || !anthropicApiKey) {
+  console.error(
+    "❌ Missing required API keys! Ensure HF_ACCESS_TOKEN and ANTHROPIC_API_KEY are set."
+  );
+}
+
+const hf = new HfInference(hfAccessToken);
+const anthropic = new Anthropic({ apiKey: anthropicApiKey });
 
 const SYSTEM_PROMPT = `
-You are an AI assistant that suggests a recipe based on a given list of ingredients. You don't need to use every ingredient. Additional ingredients are allowed, but keep them minimal. Format your response in markdown.
+You are an assistant that receives a list of ingredients that a user has and suggests a recipe they could make with some or all of those ingredients. You don't need to use every ingredient they mention in your recipe. The recipe can include additional ingredients they didn't mention, but try not to include too many extra ingredients. Format your response in markdown to make it easier to render to a web page.
 `;
 
 export async function POST(req: Request) {
   try {
-    const { ingredients } = await req.json();
+    const { ingredients, model = "claude" } = await req.json();
 
-    // ✅ Validate input before making the request
     if (!Array.isArray(ingredients) || ingredients.length === 0) {
       return NextResponse.json(
-        { error: "Invalid request. Please provide a list of ingredients." },
+        {
+          error:
+            "Invalid request. Please provide a list of ingredients as an array.",
+        },
         { status: 400 }
       );
     }
 
     const ingredientsString = ingredients.join(", ");
-    const response = await hf.chatCompletion({
-      model: "mistralai/Mixtral-8x7B-Instruct-v0.1",
-      messages: [
-        { role: "system", content: SYSTEM_PROMPT },
-        {
-          role: "user",
-          content: `I have ${ingredientsString}. Please give me a recipe!`,
-        },
-      ],
-      max_tokens: 1024,
-    });
+    let recipe = "";
 
-    // ✅ Ensure a valid response
-    const recipeContent = response?.choices?.[0]?.message?.content;
-    if (!recipeContent) {
-      throw new Error("No recipe returned from AI model.");
+    if (model === "claude") {
+      const claudeResponse = await anthropic.messages.create({
+        model: "claude-3-haiku-20240307",
+        max_tokens: 1024,
+        system: SYSTEM_PROMPT,
+        messages: [
+          {
+            role: "user",
+            content: `I have ${ingredientsString}. Please give me a recipe!`,
+          },
+        ],
+      });
+
+      recipe =
+        claudeResponse?.content?.[0]?.text?.trim() ||
+        "⚠️ No valid response from Claude.";
+    } else {
+      const mistralResponse = await hf.chatCompletion({
+        model: "mistralai/Mixtral-8x7B-Instruct-v0.1",
+        messages: [
+          { role: "system", content: SYSTEM_PROMPT },
+          {
+            role: "user",
+            content: `I have ${ingredientsString}. Please give me a recipe!`,
+          },
+        ],
+        max_tokens: 1024,
+      });
+
+      recipe =
+        mistralResponse?.choices?.[0]?.message?.content?.trim() ||
+        "⚠️ No valid response from Mistral.";
     }
 
-    return NextResponse.json({ recipe: recipeContent });
+    return NextResponse.json({ recipe });
   } catch (error) {
-    console.error("Error fetching AI-generated recipe:", error);
+    console.error("❌ Error fetching AI-generated recipe:", error);
     return NextResponse.json(
-      { error: "Failed to generate a recipe. Please try again later." },
+      {
+        error: `Failed to generate a recipe. Details: ${
+          error instanceof Error ? error.message : String(error)
+        }`,
+      },
       { status: 500 }
     );
   }

@@ -1,4 +1,5 @@
 "use client";
+
 import { useState } from "react";
 import { useInventoryContext } from "@/context/InventoryContext";
 import { CATEGORY_OPTIONS, CategoryOptions } from "@/types/types";
@@ -32,8 +33,18 @@ export default function FoodInventory() {
 
   const [showAddItem, setShowAddItem] = useState(false);
 
+  // Handle Enter Key Submission
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      if (newItemName.trim()) {
+        handleAddOrEditItem();
+      }
+    }
+  };
+
   return (
-    <div className="mx-auto w-full min-wfull max-w-full h-full min-h-screen py-16 px-6 space-y-14">
+    <div className="mx-auto w-full max-w-screen-lg px-4 sm:px-6 py-6 sm:py-8 md:py-16 space-y-6 sm:space-y-10 md:space-y-14 min-h-screen">
       <div className="flex justify-between items-center mb-8">
         <Title>Inventory</Title>
         <Button
@@ -56,8 +67,10 @@ export default function FoodInventory() {
               placeholder="e.g., Tomato"
               value={newItemName}
               onChange={(e) => setNewItemName(e.target.value)}
+              onKeyDown={handleKeyDown} // Detect Enter Key
               className="border border-gray-300 rounded-md px-4 py-2 text-sm focus:ring focus:border-gray-400"
             />
+
             <Select
               value={newItemCategory}
               onValueChange={(value) =>
@@ -75,6 +88,7 @@ export default function FoodInventory() {
                 ))}
               </SelectContent>
             </Select>
+
             <Button
               className="px-5 py-2.5 bg-gray-900 hover:bg-gray-800 text-white rounded-md transition-all shadow-sm"
               onClick={handleAddOrEditItem}

@@ -29,12 +29,11 @@
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
     --radius: 0.5rem;
-
     --sidebar-background: linear-gradient(
       to bottom,
-      white 30%,
-      #ecfdf5 65%,
-      #d4f8e7 100%
+      hsl(0, 0%, 100%) 30%,
+      hsl(152, 77%, 95%) 65%,
+      hsl(152, 67%, 87%) 100%
     );
   }
 
@@ -63,8 +62,12 @@
     --chart-3: 30 80% 55%;
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
-
-    --sidebar-background: linear-gradient(to bottom, #1a1a1a, #2c2c2c, #3d3d3d);
+    --sidebar-background: linear-gradient(
+      to bottom,
+      hsl(0, 0%, 100%) 30%,
+      hsl(152, 77%, 95%) 65%,
+      hsl(152, 67%, 87%) 100%
+    );
   }
 }
 
@@ -98,4 +101,8 @@ a {
 button {
   font-family: "Geist", sans-serif;
   cursor: pointer;
+}
+
+.bg-sidebar {
+  background-image: var(--sidebar-background);
 }
