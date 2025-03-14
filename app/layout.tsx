@@ -4,6 +4,8 @@ import { Geist, EB_Garamond } from "next/font/google";
 import { AppSidebar } from "@/app/components/AppSidebar";
 import { Providers } from "@/context/Providers";
 import "@/styles/global.css";
+import { SidebarProvider, SidebarTrigger } from "@/ui/sidebar";
+import { Toaster } from "@/ui/sonner";
 
 const geist = Geist({ subsets: ["latin"], variable: "--font-geist" });
 const garamond = EB_Garamond({
@@ -32,10 +34,14 @@ export default function RootLayout({
       <body className="min-h-screen flex font-sans">
         <Providers>
           <div className="flex min-h-screen w-full">
-            <AppSidebar />
-            <main className="flex-1 min-w-0 p-6 transition-all duration-300">
-              {children}
-            </main>
+            <SidebarProvider>
+              <AppSidebar />
+              <main className="flex-1 min-w-0 p-6 transition-all duration-300">
+                <SidebarTrigger className="fixed z-50" />
+                {children}
+                <Toaster />
+              </main>{" "}
+            </SidebarProvider>
           </div>
         </Providers>
       </body>
