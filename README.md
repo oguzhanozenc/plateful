@@ -12,8 +12,8 @@ Plateful is a **meal planning web application** that uses **AI (Claude + Hugging
 
 - 🥗 **Generate Recipes** using Claude + Hugging Face (AI) or Spoonacular's public recipe database
 - 📦 **Manage Pantry Inventory** with ingredient tracking, categorization, and real-time updates
-- 📅 **Weekly Meal Planner** with drag-to-schedule features and calendar-based navigation
-- 🔁 **Debounced & Cached API Requests** to prevent rate limits and optimize performance
+- 🗕️ **Weekly Meal Planner** with drag-to-schedule features and calendar-based navigation
+- 🔀 **Debounced & Cached API Requests** to prevent rate limits and optimize performance
 - 🔒 **Secure API Integration** with server-only handling for Claude, Hugging Face, and Spoonacular keys
 - 🧠 **Modular State Management** with scoped React Context providers
 - 🧾 **Clean Markdown Recipe Rendering** via `react-markdown`, `remark-gfm`, and `rehype-sanitize`
