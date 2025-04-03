@@ -6,128 +6,139 @@
   <img src="/public/featuredimg.png" alt="Featured Image"  />
 </a>
 
-Plateful is a **meal planning web application** designed to help users efficiently **manage their food inventory, generate recipes**, and **plan weekly meals**. The app provides a **seamless and intuitive UI** for effortless meal planning, ensuring users can make the most out of their available ingredients.
+Plateful is a **meal planning web application** that uses **AI (Claude + Hugging Face)** and public recipe data to help users efficiently **manage their food inventory**, **generate recipes**, and **plan weekly meals**. The app offers a **seamless and intuitive UI** for organizing meals around available ingredients, making food planning more intelligent, personalized, and time-efficient.
 
 ## Features
 
-- 🥗 **Generate Recipes** based on available ingredients
-- 📦 **Manage Inventory** to keep track of stored food items
-- 📅 **Weekly Meal Planner** for structuring meals in advance
-- 📊 **User-Friendly Dashboard** with recent activity tracking
+- 🥗 **Generate Recipes** using Claude + Hugging Face (AI) or Spoonacular's public recipe database
+- 📦 **Manage Pantry Inventory** with ingredient tracking, categorization, and real-time updates
+- 📅 **Weekly Meal Planner** with drag-to-schedule features and calendar-based navigation
+- 🔁 **Debounced & Cached API Requests** to prevent rate limits and optimize performance
+- 🔒 **Secure API Integration** with server-only handling for Claude, Hugging Face, and Spoonacular keys
+- 🧠 **Modular State Management** with scoped React Context providers
+- 🧾 **Clean Markdown Recipe Rendering** via `react-markdown`, `remark-gfm`, and `rehype-sanitize`
+- 📊 **User-Friendly Dashboard** with recent activity tracking and streamlined navigation
 
 ## Tech Stack
 
-- **Framework:** Next.js (with TypeScript)
+- **Framework:** Next.js 15 (with TypeScript)
 - **Routing:** Next.js App Router
-- **State Management:** React Context API
+- **State Management:** React Context API (modular, scoped)
 - **Styling:** Tailwind CSS
 - **UI Components:** ShadCN/UI
 - **Deployment:** Vercel
+- **AI Services:** Anthropic Claude, Hugging Face Inference API
+- **Data APIs:** Spoonacular API
+- **Markdown Rendering:** react-markdown, remark-gfm, rehype-sanitize
 
 ## Project Structure
 
-```
+```bash
 plateful/
-│── app/                     # Next.js App Router directory
-│   ├── layout.tsx           # Root layout for shared structure
-│   ├── not-found.tsx        # 404 page handling
+├── app/                     # App Router directory
+│   ├── layout.tsx           # Root layout
 │   ├── page.tsx             # Home page
-│   │
-│   ├── api/                 # API routes (server functions)
-│   │   ├── recipes/route.ts # Recipes API endpoint
-│   │   ├── (other API routes)
-│   │
-│   ├── create-recipe/page.tsx     # Create a new recipe
-│   ├── generate-recipe/page.tsx   # Generate a recipe
-│   ├── inventory/page.tsx         # Inventory management
-│   ├── recipes/page.tsx           # Recipes listing
-│   ├── shopping-list/page.tsx     # Shopping list management
-│   ├── weekly-planner/page.tsx    # Weekly meal planner
+│   ├── not-found.tsx        # 404 page
+│   ├── api/                 # Server-side API handlers
+│   │   ├── recipes/route.ts
+│   │   └── ...
+│   ├── create-recipe/page.tsx
+│   ├── generate-recipe/page.tsx
+│   ├── inventory/page.tsx
+│   ├── recipes/page.tsx
+│   ├── shopping-list/page.tsx
+│   └── weekly-planner/page.tsx
 │
-│── components/              # Shared reusable UI components
+├── components/              # Shared UI components
 │
-│── context/                 # Context API state management
-│   ├── AppContext.tsx       # Global state provider
+├── context/                 # Modular React Contexts
+│   ├── InventoryContext.tsx
+│   ├── CalendarContext.tsx
+│   ├── MealPlannerContext.tsx
 │
-│── hooks/                   # Custom React hooks
-│   ├── useInventory.ts      # Inventory-related logic
-│   ├── useRecipes.ts        # Fetching and handling recipes
+├── hooks/                   # Custom hooks
+│   ├── useRecipes.ts
+│   └── useRecipeDetails.ts
 │
-│── lib/                     # Utility functions & API helpers
-│   ├── api.ts               # Global fetch helper
-│   ├── utils.ts             # General utility functions
+├── lib/                     # Helpers
+│   ├── api.ts
+│   └── utils.ts
 │
-│── public/                  # Static assets
-│   ├── featuredimg.png      # Featured image
-│   ├── logo.png             # App logo
+├── public/                  # Static assets
+│   ├── logo.png
+│   └── featuredimg.png
 │
-│── styles/                  # Global styling files
-│   ├── global.css           # Tailwind styles
+├── styles/                  # Tailwind global styles
+│   └── global.css
 │
-│── types/                   # TypeScript type definitions
+├── types/                   # TypeScript types
 │
-│── ui/                      # ShadCN/UI components
-│   ├── button.tsx           # Button component
-│   ├── input.tsx            # Input component
-│   ├── select.tsx           # Select dropdown
-│   ├── dialog.tsx           # Modal/dialog component
+├── ui/                      # ShadCN-styled components
+│   ├── button.tsx
+│   ├── input.tsx
+│   ├── dialog.tsx
+│   ├── select.tsx
+│   ├── Title.tsx
+│   ├── SaveToPlannerModal.tsx
+│   ├── PlannerCell.tsx
+│   └── RecentActivityCard.tsx
 │
-│── .gitignore               # Git ignored files
-│── eslint.config.js         # Linting configuration
-│── next-env.d.ts            # Next.js TypeScript setup
-│── package.json             # Project dependencies
-│── tailwind.config.js       # Tailwind configuration
-│── tsconfig.json            # TypeScript configuration
-│── README.md                # Project documentation
+├── .gitignore
+├── eslint.config.js
+├── next-env.d.ts
+├── next.config.js
+├── package.json
+├── tailwind.config.js
+├── tsconfig.json
+└── README.md
 ```
 
 ## Getting Started
 
 ### 1. Clone the Repository
 
-```sh
+```bash
 git clone https://github.com/oguzhanozenc/plateful.git
 cd plateful
 ```
 
 ### 2. Install Dependencies
 
-```sh
+```bash
 yarn install
 ```
 
 ### 3. Start the Development Server
 
-```sh
+```bash
 yarn dev
 ```
 
-Runs the app in development mode. Open `http://localhost:3000/` in your browser.
+Open your browser at `http://localhost:3000/`.
 
 ## Deployment to Vercel
 
 ### 1. Build for Production
 
-```sh
+```bash
 yarn build
 ```
 
 ### 2. Deploy to Vercel
 
 - Link your GitHub repository to Vercel
-- Set **build command** to `yarn build`
-- Deploy your site at `https://platefulapp.vercel.app/`
+- Set **Build Command**: `yarn build`
+- Set **Output Directory**: `.next`
+- Deploy at: `https://platefulapp.vercel.app/`
 
 ## Contributing
 
-Contributions are welcome! If you'd like to improve Plateful:
-
 1. Fork the repository
-2. Create a feature branch (`git checkout -b feature-branch`)
+2. Create a branch (`git checkout -b feature-branch`)
 3. Commit your changes (`git commit -m "Add feature"`)
-4. Push to the branch (`git push origin feature-branch`)
+4. Push to GitHub (`git push origin feature-branch`)
 5. Create a Pull Request
 
 ## License
 
-MIT License © 2025 Oguzhan Ozenc.
+MIT License © 2025 Oguzhan Ozenc
